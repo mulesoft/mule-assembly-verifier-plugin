@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.mule.tools</groupId>
+	<version>1.0</version>
+	<properties>
+		<muleVersion>1.4.1</muleVersion>
+	</properties>
+	<artifactId>mavp-tool</artifactId>
+	<!-- This should be "pom" not "jar" but if it is set to "pom", the list of dependencies gets ignored
+	by the assembly plugin. -->
+	<packaging>jar</packaging>
+	<name>Mule Assembly Verifier</name>
+	<description>To be moved out of regular build.</description>
+	<distributionManagement>
+		<repository>
+			<id>muleforge.webdav.releases</id>
+			<name>MAVP Distributions Release Repository</name>
+			<url>dav:https://dav.muleforge.org/dist/mavp-tool</url>
+		</repository>
+		<snapshotRepository>
+			<id>>muleforge.webdav.snapshots</id>
+			<name>MAVP Distributions Snapshot Repository</name>
+			<url>
+				dav:https://dav.muleforge.org/snapshots.dist/mavp-tool</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+	<dependencies>
+		<!-- Add dependencies here -->
+		<dependency>
+			<groupId>org.mule.tests</groupId>
+			<artifactId>mule-tests-functional</artifactId>
+			<version>${version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<finalName>${artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<!--
+				Uncomment when it's published, contains wildcards functionality.
+				Don't want to go with a SNAPSHOT yet.
+				-->
+				<!-- version>2.2</version -->
+				<configuration>
+					<finalName>${artifactId}-${version}</finalName>
+					<descriptors>
+						<descriptor>assembly.xml</descriptor>
+					</descriptors>
+					<appendAssemblyId>false</appendAssemblyId>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>assembly</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<repositoryId>muleforge.webdav.releases</repositoryId>
+					<snapshotRepositoryId>muleforge.webdav.snapshots</snapshotRepositoryId>
+				</configuration>
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2-SNAPSHOT</version>
+			</extension>
+		</extensions>
+		
+	</build>
+</project>
