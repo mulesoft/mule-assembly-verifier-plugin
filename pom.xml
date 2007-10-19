@@ -84,16 +84,26 @@
     </build>
 
     <distributionManagement>
+        <!-- 
+             As this plugin is used in Mule's build, we don't release into the forge 
+             but rather into our custom Mule repo.
+        -->
         <repository>
-            <id>muleforge.webdav.releases</id>
-            <url>dav:https://dav.muleforge.org/repository/mavp-tool/</url>
+            <id>mule-releases</id>
+            <name>Mule Release Repository</name>
+            <url>dav:https://dav.codehaus.org/repository/mule/</url>
         </repository>
         <snapshotRepository>
-            <id>muleforge.webdav.snapshots</id>
-            <url>dav:https://dav.muleforge.org/snapshots.repository/mavp-tool/</url>
+            <id>mule-snapshots</id>
+            <name>Mule Snapshot Repository</name>
+            <url>dav:https://dav.codehaus.org/snapshots.repository/mule/</url>
         </snapshotRepository>
+        <!--
+            The site is published to the forge, however ...
+        -->
         <site>
             <id>muleforge.webdav.sites</id>
+            <name>MAVP Forge Website</name>
             <url>dav:https://dav.muleforge.org/mavp-tool/</url>
         </site>
     </distributionManagement>
