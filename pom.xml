@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.tools</groupId>
     <artifactId>mule-assembly-verifier</artifactId>
-    <version>1.1</version>
+    <version>1.2-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
     <name>Mule Assembly Verifier Plugin</name>
 
@@ -104,7 +104,7 @@
         <site>
             <id>muleforge.webdav.sites</id>
             <name>MAVP Forge Website</name>
-            <url>dav:https://dav.muleforge.org/mavp-tool/</url>
+            <url>dav:https://dav.muleforge.org/mavp-tool/${version}</url>
         </site>
     </distributionManagement>
 </project>
