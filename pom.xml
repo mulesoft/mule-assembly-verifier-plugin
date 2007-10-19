@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.mule.tools</groupId>
+    <artifactId>mule-assembly-verifier</artifactId>
+    <version>1.1</version>
+    <packaging>maven-plugin</packaging>
+    <name>Mule Assembly Verifier Plugin</name>
+
+    <description>
+        Verify contents of the output assembly against a controlled set of libraries.
+    </description>
+
+    <properties>
+        <groovyMojoVersion>1.0-beta-1</groovyMojoVersion>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <!-- TODO inherit top-level pre-reqs for Maven  -->
+            <version>2.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo.groovy</groupId>
+            <artifactId>groovy-mojo-support</artifactId>
+            <version>${groovyMojoVersion}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+            </extension>
+        </extensions>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo.groovy</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <!--
+                                HACK: The groovy:compile goal normally finds sources under src/main/groovy,
+                                      but the archetype plugin can only put Java-like sources into src/main/java.
+                                -->
+                                <fileset>
+                                    <directory>${pom.basedir}/src/main/java</directory>
+                                    <includes>
+                                        <include>**/*.groovy</include>
+                                    </includes>
+                                </fileset>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.mojo.groovy</groupId>
+                        <artifactId>groovy-mojo-tools</artifactId>
+                        <version>${groovyMojoVersion}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>muleforge.webdav.releases</id>
+            <url>dav:https://dav.muleforge.org/repository/mavp-tool/</url>
+        </repository>
+        <snapshotRepository>
+            <id>muleforge.webdav.snapshots</id>
+            <url>dav:https://dav.muleforge.org/snapshots.repository/mavp-tool/</url>
+        </snapshotRepository>
+        <site>
+            <id>muleforge.webdav.sites</id>
+            <url>dav:https://dav.muleforge.org/mavp-tool/</url>
+        </site>
+    </distributionManagement>
+</project>
