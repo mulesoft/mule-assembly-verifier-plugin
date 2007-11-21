@@ -18,6 +18,14 @@ class AssemblyContentsVerifier extends GroovyMojoSupport
     File whitelist
 
     /**
+     * A list of fully qualified archive entries to ignore when checking
+     * against the whitelist.
+     *
+     * @parameter default-value=[]
+     */
+    List blacklist
+     
+    /**
      * File name which contents will be verified.
      * @parameter default-value="${project.build.finalName}.${project.packaging}"
      */
@@ -51,13 +59,22 @@ class AssemblyContentsVerifier extends GroovyMojoSupport
         // temp directory to unpack to
         def tempDir = new File("${project.build.directory}/mule-assembly-verifier-temp")
 
+        // unpack archive
         ant.unzip(src: outputFile,
                   dest: tempDir)
+
+        // create list of blacklisted Files
+        def blacklistedFiles = new HashSet();
+        blacklist.each() { entry ->
+            blacklistedFiles.add(new File(tempDir, entry))
+        }
+
+        log.debug("Blacklisted files: " + blacklistedFiles)
 
         // list all jars
         def jars = []
         tempDir.eachFileRecurse() { file ->
-            if (!file.directory && file.name ==~ /.*\.jar/) {
+            if (!file.directory && file.name ==~ /.*\.jar/ && !blacklistedFiles.contains(file)) {
                 jars << file.name
             }
         }
