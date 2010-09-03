@@ -1,14 +1,14 @@
 package org.mule.tools
 
-import org.codehaus.mojo.groovy.GroovyMojoSupport
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.project.MavenProject
+import org.codehaus.groovy.maven.mojo.GroovyMojo
 
 /**
  * @goal verify
  */
-class AssemblyContentsVerifier extends GroovyMojoSupport
+class AssemblyContentsVerifier extends GroovyMojo
 {
     /**
      * The library list to check against.
@@ -64,7 +64,7 @@ class AssemblyContentsVerifier extends GroovyMojoSupport
                   dest: tempDir)
 
         // create list of blacklisted Files
-        def blacklistedFiles = new HashSet();
+        def blacklistedFiles = new HashSet()
         blacklist.each() { entry ->
             blacklistedFiles.add(new File(tempDir, entry))
         }
@@ -75,7 +75,7 @@ class AssemblyContentsVerifier extends GroovyMojoSupport
         def jars = []
         tempDir.eachFileRecurse() { file ->
             if (!file.directory && file.name ==~ /.*\.jar/ && !blacklistedFiles.contains(file)) {
-                jars << file.name
+                jars << file
             }
         }
 
