@@ -86,13 +86,6 @@
             <name>Mule Snapshot Repository</name>
             <url>dav:https://dav.codehaus.org/snapshots.repository/mule/</url>
         </snapshotRepository>
-        <!--
-            The site is published to the forge, however ...
-        -->
-        <site>
-            <id>muleforge.webdav.sites</id>
-            <name>MAVP Forge Website</name>
-            <url>dav:https://dav.muleforge.org/mavp-tool/${version}</url>
-        </site>
+
     </distributionManagement>
 </project>
