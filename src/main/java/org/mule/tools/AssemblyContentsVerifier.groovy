@@ -3,7 +3,7 @@ package org.mule.tools
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.project.MavenProject
-import org.codehaus.groovy.maven.mojo.GroovyMojo
+import org.codehaus.gmaven.mojo.GroovyMojo
 
 /**
  * @goal verify
