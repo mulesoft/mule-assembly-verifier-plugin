@@ -97,6 +97,7 @@
             <id>mule-snapshots</id>
             <name>Mule Snapshot Repository</name>
             <url>dav:https://dav.codehaus.org/snapshots.repository/mule/</url>
+            <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
 
     </distributionManagement>
