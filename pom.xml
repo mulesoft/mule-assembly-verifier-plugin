@@ -15,14 +15,14 @@
     </description>
 
     <properties>
-        <groovyMojoVersion>1.0-beta-2</groovyMojoVersion>
+        <gmavenVersion>1.3</gmavenVersion>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.codehaus.gmaven</groupId>
             <artifactId>gmaven-mojo</artifactId>
-            <version>1.3</version>
+            <version>${gmavenVersion}</version>
         </dependency>
     </dependencies>
 
@@ -38,8 +38,9 @@
 
         <plugins>
             <plugin>
-                <groupId>org.codehaus.groovy.maven</groupId>
+                <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>gmaven-plugin</artifactId>
+                <version>${gmavenVersion}</version>
 
                 <executions>
                     <execution>
