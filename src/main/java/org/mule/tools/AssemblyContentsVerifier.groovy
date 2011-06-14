@@ -118,7 +118,7 @@ class AssemblyContentsVerifier extends GroovyMojo
         def expected = []
         whitelist.eachLine() {
             // ignore comments and empty lines
-            if (!it.startsWith('#') && !it.trim().size() == 0) {
+            if (!it.startsWith('#') && it.trim().size() != 0) {
                 // canonicalize and interpolate the entry
                 expected << it.replaceAll("\\\\", "/").replace('${productVersion}', productVersion)
             }
@@ -135,7 +135,7 @@ class AssemblyContentsVerifier extends GroovyMojo
         def expected = []
         whitelist.eachLine() {
             // ignore comments and empty lines
-            if (!it.startsWith('#') && !it.trim().size() == 0) {
+            if (!it.startsWith('#') && it.trim().size() != 0) {
                 // canonicalize and interpolate the entry
                 expected << it.replaceAll("\\\\", "/").replace('${productVersion}', productVersion)
             }
