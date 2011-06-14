@@ -32,6 +32,12 @@ class AssemblyContentsVerifier extends GroovyMojo
     String projectOutputFile
 
     /**
+     * Version of the product to be verified. Used in path expressions.
+     * @parameter default-value="${project.version}"
+     */
+    String productVersion
+
+    /**
      * Project instance.
      * @parameter default-value="${project}"
      * @required
@@ -57,65 +63,48 @@ class AssemblyContentsVerifier extends GroovyMojo
         }
 
         // temp directory to unpack to
-        def tempDir = new File("${project.build.directory}/mule-assembly-verifier-temp")
+        def root = new File("${project.build.directory}/mule-assembly-verifier-temp")
 
         // unpack archive
         ant.unzip(src: outputFile,
-                  dest: tempDir)
+                  dest: root)
 
         // create list of blacklisted Files
         def blacklistedFiles = new HashSet()
         blacklist.each() { entry ->
-            blacklistedFiles.add(new File(tempDir, entry))
+            blacklistedFiles.add(new File(root, entry))
         }
 
         log.debug("Blacklisted files: " + blacklistedFiles)
 
-        // list all jars
-        def jars = []
-        tempDir.eachFileRecurse() { file ->
-            if (!file.directory && file.name ==~ /.*\.jar/ && !blacklistedFiles.contains(file)) {
-                jars << file
+        def canonicalRootPath = root.canonicalPath.replaceAll("\\\\", "/")
+
+        // list all files
+        def files = []
+        root.eachFileRecurse() { file ->
+
+            def canonicalPath = file.canonicalPath.replaceAll("\\\\", "/") - canonicalRootPath
+
+            if (!blacklistedFiles.contains(canonicalPath)) {
+                files << canonicalPath
             }
         }
 
-        log.debug("Jars in the assembly: $jars")
+        log.debug("Files in the assembly: " + files.join("\n\t"))
 
-        def muleVersion = "$project.version"
-        // strip version and jar suffixes
-        def actualNames = jars.collect {
-            if (it ==~ /^mule.*/) {
-                // for Mule libs
-
-                // small demo on what it does and a test
-                String s1 = 'mule-core-1.4.2-SNAPSHOT.jar'
-                String s2 = 'mule-core-1.4.2-SNAPSHOT-sources.jar'
-                String testVersion = '1.4.2-SNAPSHOT'
-                assert 'mule-core' == s1.replaceAll("-$testVersion", '') - '.jar'
-                assert 'mule-core-sources' == s2.replaceAll("-$testVersion", '') - '.jar'
-
-                return it.replaceAll("-$muleVersion", '') - '.jar'
-            } else {
-                // for 3rd-party libs
-                return it - ".jar"
-            }
-        }
-
-        log.debug("Filtered jar names: $actualNames")
-
-        def missing = findMissing(actualNames)
-        def unexpected = findUnexpected(actualNames)
+        def missing = findMissing(files)
+        def unexpected = findUnexpected(files)
 
         if (missing || unexpected) {
-            def msg = new StringBuffer("The following problems have been encountered:\n\n")
+            def msg = new StringBuilder("The following problems have been encountered:\n\n")
             if (missing) {
-                msg << "\tMissing libraries:\n"
+                msg << "\tMissing from the Distribution:\n"
                 missing.eachWithIndex { name, i ->
                     msg << "\t\t\t${(i + 1).toString().padLeft(3)}. ${name}\n"
                 }
             }
             if (unexpected) {
-                msg << "\tUnexpected libraries:\n"
+                msg << "\tUnexpected entries in the Distribution:\n"
                 unexpected.eachWithIndex { name, i ->
                     msg << "\t\t\t${(i + 1).toString().padLeft(3)}. ${name}\n"
                 }
@@ -127,7 +116,13 @@ class AssemblyContentsVerifier extends GroovyMojo
     def findMissing(actualNames) {
         // load the whitelist
         def expected = []
-        whitelist.eachLine() { expected << it }
+        whitelist.eachLine() {
+            // ignore comments and empty lines
+            if (!it.startsWith('#') && !it.trim().size() == 0) {
+                // canonicalize and interpolate the entry
+                expected << it.replaceAll("\\\\", "/").replace('${productVersion}', productVersion)
+            }
+        }
         log.debug("Whitelist: $expected")
         // find all whitelist entries which are missing
         expected.findAll {
@@ -138,7 +133,13 @@ class AssemblyContentsVerifier extends GroovyMojo
     def findUnexpected(actualNames) {
         // load the whitelist
         def expected = []
-        whitelist.eachLine() { expected << it }
+        whitelist.eachLine() {
+            // ignore comments and empty lines
+            if (!it.startsWith('#') && !it.trim().size() == 0) {
+                // canonicalize and interpolate the entry
+                expected << it.replaceAll("\\\\", "/").replace('${productVersion}', productVersion)
+            }
+        }
         log.debug("Whitelist: $expected")
         // find all libs not in the whitelist
         actualNames.findAll {
