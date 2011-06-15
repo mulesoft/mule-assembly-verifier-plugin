@@ -132,10 +132,36 @@ class AssemblyContentsVerifier extends GroovyMojo
                 expected << parsed.replace('${productVersion}', productVersion)
             }
         }
-        log.debug("Whitelist: $expected")
+        // strip "-SNAPSHOT" from the version if present
+        def version = productVersion - "-SNAPSHOT"
+        // locate maven3-style snapshot string with a unique timestamp
+        def pattern = Pattern.compile("$version-\\d{8}.\\d{6}-\\d+")
+
         // find all whitelist entries which are missing
+
+        // for maven3-style timestamped snapshots
+        def processedActualNames = []
+        if (maven3StyleSnapshots) {
+            actualNames.each {
+                // pre-process the actual filename to look for a match by replacing m3 snapshot timestamp
+                // with just a "-SNAPSHOT" for comparison
+                def matcher = pattern.matcher(it)
+                if (matcher.find()) {
+                    def processed = matcher.replaceFirst("$version-SNAPSHOT")
+                    processedActualNames << processed
+                } else {
+                    processedActualNames << it
+                }
+            }
+        }
+
+        // find all libs not in the whitelist
         expected.findAll {
-            !actualNames.contains(it)
+            if (!maven3StyleSnapshots) {
+                return !actualNames.contains(it)
+            } else {
+                return !processedActualNames.contains(it)
+            }
         }.sort { it.toLowerCase() } // sort case-insensitive
     }
 
@@ -149,8 +175,6 @@ class AssemblyContentsVerifier extends GroovyMojo
                 expected << it.replaceAll("\\\\", "/").replace('${productVersion}', productVersion)
             }
         }
-        log.debug("Whitelist: $expected")
-
         // strip "-SNAPSHOT" from the version if present
         def version = productVersion - "-SNAPSHOT"
         // locate maven3-style snapshot string with a unique timestamp
@@ -168,6 +192,7 @@ class AssemblyContentsVerifier extends GroovyMojo
                     def processed = matcher.replaceFirst("$version-SNAPSHOT")
                     return !expected.contains(processed)
                 }
+                return false
             }
         }.sort { it.toLowerCase() } // sort case-insensitive
     }
