@@ -13,7 +13,7 @@ class AssemblyContentsVerifier extends GroovyMojo
     /**
      * The library list to check against.
      *
-     * @parameter default-value="src/main/resources/assembly-whitelist.txt"
+     * @parameter default-value="assembly-whitelist.txt"
      */
     File whitelist
 
