@@ -49,7 +49,7 @@ class AssemblyContentsVerifier extends GroovyMojo
      * Project instance.
      * @parameter default-value="${project}"
      * @required
-     * @reeadonly
+     * @readonly
      */
     MavenProject project
 
