@@ -4,6 +4,7 @@ import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.project.MavenProject
 import org.codehaus.gmaven.mojo.GroovyMojo
+import java.util.regex.Pattern
 
 /**
  * @goal verify
@@ -36,6 +37,13 @@ class AssemblyContentsVerifier extends GroovyMojo
      * @parameter default-value="${project.version}"
      */
     String productVersion
+
+    /**
+     * Maven 3 dropped non-unique snapshots support and always timestamps artifacts on deploy. When 'true',
+     * such artifacts will be treated specially in the distribution. Disable the flag for Maven 2 based builds.
+     * @parameter default-value=true
+     */
+    Boolean maven3StyleSnapshots
 
     /**
      * Project instance.
@@ -120,7 +128,8 @@ class AssemblyContentsVerifier extends GroovyMojo
             // ignore comments and empty lines
             if (!it.startsWith('#') && it.trim().size() != 0) {
                 // canonicalize and interpolate the entry
-                expected << it.replaceAll("\\\\", "/").replace('${productVersion}', productVersion)
+                def parsed = it.replaceAll("\\\\", "/")
+                expected << parsed.replace('${productVersion}', productVersion)
             }
         }
         log.debug("Whitelist: $expected")
@@ -141,9 +150,25 @@ class AssemblyContentsVerifier extends GroovyMojo
             }
         }
         log.debug("Whitelist: $expected")
+
+        // strip "-SNAPSHOT" from the version if present
+        def version = productVersion - "-SNAPSHOT"
+        // locate maven3-style snapshot string with a unique timestamp
+        def pattern = Pattern.compile("$version-\\d{8}.\\d{6}-\\d+")
+
         // find all libs not in the whitelist
         actualNames.findAll {
-            !expected.contains(it)
+            if (!maven3StyleSnapshots) {
+                return !expected.contains(it)
+            } else {
+                // pre-process the actual filename to look for a match by replacing m3 snapshot timestamp
+                // with just a "-SNAPSHOT" for comparison
+                def matcher = pattern.matcher(it)
+                if (matcher.find()) {
+                    def processed = matcher.replaceFirst("$version-SNAPSHOT")
+                    return !expected.contains(processed)
+                }
+            }
         }.sort { it.toLowerCase() } // sort case-insensitive
     }
 }
