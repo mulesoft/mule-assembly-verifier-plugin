@@ -189,8 +189,6 @@ class AssemblyContentsVerifier extends GroovyMojo
         // convert Enumeration -> List and extract zip entry names
         def entries = Collections.list(new ZipFile(zipFile).entries()).collect { it.name }
 
-        println entries.join("\n")
-
         entries.findAll {
             entries.count(it) > 1
         }.unique()
