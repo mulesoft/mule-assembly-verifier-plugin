@@ -28,7 +28,7 @@ class AssemblyContentsVerifier extends GroovyMojo
      
     /**
      * File name which contents will be verified.
-     * @parameter default-value="${project.build.finalName}.${project.packaging}"
+     * @parameter default-value="${project.build.finalName}.zip"
      */
     String projectOutputFile
 
