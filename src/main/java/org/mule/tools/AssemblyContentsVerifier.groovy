@@ -19,14 +19,6 @@ class AssemblyContentsVerifier extends GroovyMojo
     File whitelist
 
     /**
-     * A list of fully qualified archive entries to ignore when checking
-     * against the whitelist.
-     *
-     * @parameter default-value=[]
-     */
-    List blacklist
-     
-    /**
      * File name which contents will be verified.
      * @parameter default-value="${project.build.finalName}.zip"
      */
@@ -77,25 +69,13 @@ class AssemblyContentsVerifier extends GroovyMojo
         ant.unzip(src: outputFile,
                   dest: root)
 
-        // create list of blacklisted Files
-        def blacklistedFiles = new HashSet()
-        blacklist.each() { entry ->
-            blacklistedFiles.add(new File(root, entry))
-        }
-
-        log.debug("Blacklisted files: " + blacklistedFiles)
-
         def canonicalRootPath = root.canonicalPath.replaceAll("\\\\", "/")
 
         // list all files
         def files = []
         root.eachFileRecurse() { file ->
-
             def canonicalPath = file.canonicalPath.replaceAll("\\\\", "/") - canonicalRootPath
-
-            if (!blacklistedFiles.contains(canonicalPath)) {
-                files << canonicalPath
-            }
+            files << canonicalPath
         }
 
         log.debug("Files in the assembly: " + files.join("\n\t"))
