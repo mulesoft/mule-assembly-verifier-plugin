@@ -5,6 +5,7 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.project.MavenProject
 import org.codehaus.gmaven.mojo.GroovyMojo
 import java.util.regex.Pattern
+import java.util.zip.ZipFile
 
 /**
  * @goal verify
@@ -82,8 +83,9 @@ class AssemblyContentsVerifier extends GroovyMojo
 
         def missing = findMissing(files)
         def unexpected = findUnexpected(files)
+        def duplicates = findDuplicates(outputFile)
 
-        if (missing || unexpected) {
+        if (missing || unexpected || duplicates) {
             def msg = new StringBuilder("The following problems have been encountered:\n\n")
             if (missing) {
                 msg << "\tMissing from the Distribution:\n"
@@ -94,6 +96,12 @@ class AssemblyContentsVerifier extends GroovyMojo
             if (unexpected) {
                 msg << "\tUnexpected entries in the Distribution:\n"
                 unexpected.eachWithIndex { name, i ->
+                    msg << "\t\t\t${(i + 1).toString().padLeft(3)}. ${name}\n"
+                }
+            }
+            if (duplicates) {
+                msg << "\tDuplicate entries in the Distribution:\n"
+                duplicates.eachWithIndex { name, i ->
                     msg << "\t\t\t${(i + 1).toString().padLeft(3)}. ${name}\n"
                 }
             }
@@ -175,5 +183,16 @@ class AssemblyContentsVerifier extends GroovyMojo
                 return false
             }
         }.sort { it.toLowerCase() } // sort case-insensitive
+    }
+
+    def findDuplicates(File zipFile) {
+        // convert Enumeration -> List and extract zip entry names
+        def entries = Collections.list(new ZipFile(zipFile).entries()).collect { it.name }
+
+        println entries.join("\n")
+
+        entries.findAll {
+            entries.count(it) > 1
+        }.unique()
     }
 }
