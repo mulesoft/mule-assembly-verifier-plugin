@@ -46,6 +46,8 @@ class AssemblyContentsVerifier extends GroovyMojo
      */
     MavenProject project
     def outputFile
+    def version
+    def pattern
 
     void execute() {
         // sanity check
@@ -83,6 +85,11 @@ class AssemblyContentsVerifier extends GroovyMojo
         if (log.isDebugEnabled()) {
             log.debug("Files in the assembly: " + files.join("\n\t"))
         }
+
+        // strip "-SNAPSHOT" from the version if present
+        version = productVersion - "-SNAPSHOT"
+        // locate maven3-style snapshot string with a unique timestamp
+        pattern = Pattern.compile("$version-\\d{8}.\\d{6}-\\d+")
 
         def missing = findMissing(files)
         def unexpected = findUnexpected(files)
@@ -123,10 +130,6 @@ class AssemblyContentsVerifier extends GroovyMojo
                 expected << parsed.replace('${productVersion}', productVersion)
             }
         }
-        // strip "-SNAPSHOT" from the version if present
-        def version = productVersion - "-SNAPSHOT"
-        // locate maven3-style snapshot string with a unique timestamp
-        def pattern = Pattern.compile("$version-\\d{8}.\\d{6}-\\d+")
 
         // find all whitelist entries which are missing
 
@@ -171,11 +174,6 @@ class AssemblyContentsVerifier extends GroovyMojo
             return actualNames;
         }
 
-        // strip "-SNAPSHOT" from the version if present
-        def version = productVersion - "-SNAPSHOT"
-        // locate maven3-style snapshot string with a unique timestamp
-        def pattern = Pattern.compile("$version-\\d{8}.\\d{6}-\\d+")
-
         // find all entries not in the whitelist
         actualNames.findAll {
             if (!maven3StyleSnapshots) {
@@ -195,7 +193,19 @@ class AssemblyContentsVerifier extends GroovyMojo
 
     def findDuplicates(File zipFile) {
         // convert Enumeration -> List and extract zip entry names
-        def entries = Collections.list(new ZipFile(zipFile).entries()).collect { it.name }
+        def entries = Collections.list(new ZipFile(zipFile).entries()).collect {
+            if (!maven3StyleSnapshots) {
+                return it.name
+            } else {
+                // pre-process the actual filename to look for a match by replacing m3 snapshot timestamp
+                // with just a "-SNAPSHOT" for comparison
+                def matcher = pattern.matcher(it.name)
+                if (matcher.find()) {
+                    return matcher.replaceFirst("$version-SNAPSHOT")
+                }
+                return it.name
+            }
+        }
 
         entries.findAll {
             entries.count(it) > 1
