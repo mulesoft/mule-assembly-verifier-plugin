@@ -45,6 +45,7 @@ class AssemblyContentsVerifier extends GroovyMojo
      * @readonly
      */
     MavenProject project
+    def outputFile
 
     void execute() {
         // sanity check
@@ -58,9 +59,9 @@ class AssemblyContentsVerifier extends GroovyMojo
         log.info "*" * 80
 
         // confirm output file is available
-        def outputFile = new File("$project.build.directory/$projectOutputFile")
+        outputFile = new File("$project.build.directory/$projectOutputFile")
         if (!outputFile.exists()) {
-            throw new MojoExecutionException("Output file $outputFile does not exist.")
+            throw new MojoExecutionException("Output file $outputFile  does not exist.")
         }
 
         // temp directory to unpack to
@@ -79,7 +80,9 @@ class AssemblyContentsVerifier extends GroovyMojo
             files << canonicalPath
         }
 
-        log.debug("Files in the assembly: " + files.join("\n\t"))
+        if (log.isDebugEnabled()) {
+            log.debug("Files in the assembly: " + files.join("\n\t"))
+        }
 
         def missing = findMissing(files)
         def unexpected = findUnexpected(files)
@@ -143,7 +146,6 @@ class AssemblyContentsVerifier extends GroovyMojo
             }
         }
 
-        // find all libs not in the whitelist
         expected.findAll {
             if (!maven3StyleSnapshots) {
                 return !actualNames.contains(it)
@@ -163,12 +165,18 @@ class AssemblyContentsVerifier extends GroovyMojo
                 expected << it.replaceAll("\\\\", "/").replace('${productVersion}', productVersion)
             }
         }
+
+        if (!expected) {
+            // whitelist is empty, assume every entry is unexpected
+            return actualNames;
+        }
+
         // strip "-SNAPSHOT" from the version if present
         def version = productVersion - "-SNAPSHOT"
         // locate maven3-style snapshot string with a unique timestamp
         def pattern = Pattern.compile("$version-\\d{8}.\\d{6}-\\d+")
 
-        // find all libs not in the whitelist
+        // find all entries not in the whitelist
         actualNames.findAll {
             if (!maven3StyleSnapshots) {
                 return !expected.contains(it)
