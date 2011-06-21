@@ -127,7 +127,7 @@ class AssemblyContentsVerifier extends GroovyMojo
             if (!it.startsWith('#') && it.trim().size() != 0) {
                 // canonicalize and interpolate the entry
                 def parsed = it.replaceAll("\\\\", "/")
-                expected << parsed.replace('${productVersion}', productVersion)
+                expected << parsed.replaceAll(Pattern.quote('${productVersion}'), productVersion)
             }
         }
 
@@ -141,7 +141,7 @@ class AssemblyContentsVerifier extends GroovyMojo
                 // with just a "-SNAPSHOT" for comparison
                 def matcher = pattern.matcher(it)
                 if (matcher.find()) {
-                    def processed = matcher.replaceFirst("$version-SNAPSHOT")
+                    def processed = matcher.replaceAll("$version-SNAPSHOT")
                     processedActualNames << processed
                 } else {
                     processedActualNames << it
@@ -165,7 +165,7 @@ class AssemblyContentsVerifier extends GroovyMojo
             // ignore comments and empty lines
             if (!it.startsWith('#') && it.trim().size() != 0) {
                 // canonicalize and interpolate the entry
-                expected << it.replaceAll("\\\\", "/").replace('${productVersion}', productVersion)
+                expected << it.replaceAll("\\\\", "/").replaceAll(Pattern.quote('${productVersion}'), productVersion)
             }
         }
 
@@ -183,10 +183,11 @@ class AssemblyContentsVerifier extends GroovyMojo
                 // with just a "-SNAPSHOT" for comparison
                 def matcher = pattern.matcher(it)
                 if (matcher.find()) {
-                    def processed = matcher.replaceFirst("$version-SNAPSHOT")
+                    def processed = matcher.replaceAll("$version-SNAPSHOT")
                     return !expected.contains(processed)
                 }
-                return false
+                // don't process the name, regular lookup
+                return !expected.contains(it)
             }
         }.sort { it.toLowerCase() } // sort case-insensitive
     }
@@ -201,7 +202,7 @@ class AssemblyContentsVerifier extends GroovyMojo
                 // with just a "-SNAPSHOT" for comparison
                 def matcher = pattern.matcher(it.name)
                 if (matcher.find()) {
-                    return matcher.replaceFirst("$version-SNAPSHOT")
+                    return matcher.replaceAll("$version-SNAPSHOT")
                 }
                 return it.name
             }
@@ -209,6 +210,6 @@ class AssemblyContentsVerifier extends GroovyMojo
 
         entries.findAll {
             entries.count(it) > 1
-        }.unique()
+        }.unique().sort { it.toLowerCase() } // sort case-insensitive
     }
 }
