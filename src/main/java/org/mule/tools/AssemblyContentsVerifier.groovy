@@ -20,7 +20,7 @@ class AssemblyContentsVerifier extends GroovyMojo
     File whitelist
 
     /**
-     * File name which contents will be verified.
+     * File name whose contents will be verified.
      * @parameter default-value="${project.build.finalName}.zip"
      */
     String projectOutputFile
@@ -49,6 +49,9 @@ class AssemblyContentsVerifier extends GroovyMojo
     def version
     def pattern
 
+    Set mandatoryWildcards = []
+    List whitelistEntries = []
+
     void execute() {
         // sanity check
         if (!whitelist.exists()) {
@@ -64,6 +67,27 @@ class AssemblyContentsVerifier extends GroovyMojo
         outputFile = new File("$project.build.directory/$projectOutputFile")
         if (!outputFile.exists()) {
             throw new MojoExecutionException("Output file $outputFile  does not exist.")
+        }
+
+        // process whitelist
+        whitelist.eachLine() {
+            // ignore comments and empty lines
+            if (!it.startsWith('#') && it.trim().size() != 0) {
+                // canonicalize and interpolate the entry
+                whitelistEntries << it.replaceAll("\\\\", "/").replaceAll(Pattern.quote('${productVersion}'), productVersion)
+            }
+        }
+
+        mandatoryWildcards = whitelistEntries.findAll {
+            it.endsWith('+')
+        }
+
+        // wildcards will be checked explicitly, move them out of the way for regular validation
+        whitelistEntries.removeAll(mandatoryWildcards)
+
+        // strip the trailing + sign
+        mandatoryWildcards = mandatoryWildcards.collect {
+            it - '+'
         }
 
         // temp directory to unpack to
@@ -120,17 +144,6 @@ class AssemblyContentsVerifier extends GroovyMojo
     }
 
     def findMissing(actualNames) {
-        // load the whitelist
-        def expected = []
-        whitelist.eachLine() {
-            // ignore comments and empty lines
-            if (!it.startsWith('#') && it.trim().size() != 0) {
-                // canonicalize and interpolate the entry
-                def parsed = it.replaceAll("\\\\", "/")
-                expected << parsed.replaceAll(Pattern.quote('${productVersion}'), productVersion)
-            }
-        }
-
         // find all whitelist entries which are missing
 
         // for maven3-style timestamped snapshots
@@ -149,7 +162,7 @@ class AssemblyContentsVerifier extends GroovyMojo
             }
         }
 
-        expected.findAll {
+        whitelistEntries.findAll {
             if (!maven3StyleSnapshots) {
                 return !actualNames.contains(it)
             } else {
@@ -159,17 +172,7 @@ class AssemblyContentsVerifier extends GroovyMojo
     }
 
     def findUnexpected(actualNames) {
-        // load the whitelist
-        def expected = []
-        whitelist.eachLine() {
-            // ignore comments and empty lines
-            if (!it.startsWith('#') && it.trim().size() != 0) {
-                // canonicalize and interpolate the entry
-                expected << it.replaceAll("\\\\", "/").replaceAll(Pattern.quote('${productVersion}'), productVersion)
-            }
-        }
-
-        if (!expected) {
+        if (!whitelistEntries) {
             // whitelist is empty, assume every entry is unexpected
             return actualNames;
         }
@@ -177,17 +180,25 @@ class AssemblyContentsVerifier extends GroovyMojo
         // find all entries not in the whitelist
         actualNames.findAll {
             if (!maven3StyleSnapshots) {
-                return !expected.contains(it)
+                return !whitelistEntries.contains(it)
             } else {
                 // pre-process the actual filename to look for a match by replacing m3 snapshot timestamp
                 // with just a "-SNAPSHOT" for comparison
                 def matcher = pattern.matcher(it)
                 if (matcher.find()) {
                     def processed = matcher.replaceAll("$version-SNAPSHOT")
-                    return !expected.contains(processed)
+                    if (!whitelistEntries.contains(processed)) {
+                        // no direct match, check against the mandatory wildcard (entry ending with '+')
+                        return mandatoryWildcards.find { w -> processed.startsWith(w) } == null
+                    }
+                    return false
                 }
                 // don't process the name, regular lookup
-                return !expected.contains(it)
+                if (!whitelistEntries.contains(it)) {
+                    // no direct match, check against the mandatory wildcard (entry ending with '+')
+                    return mandatoryWildcards.find { w -> it.startsWith(w)} == null
+                }
+                return false
             }
         }.sort { it.toLowerCase() } // sort case-insensitive
     }
