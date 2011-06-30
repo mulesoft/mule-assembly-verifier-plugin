@@ -168,7 +168,6 @@ Available options:
 |projectOutputFile      |String                 |${project.build.finalName}.zip     |Archive to validate|
 |productVersion         |String                 |${project.version}                 |This project's version|
 |maven3StyleSnapshots   |Boolean                |true                               |Disable for Maven 2 builds|
-|-----------------------|-----------------------|-----------------------------------|-------------|
 
 
 ## Known Issues
