@@ -161,14 +161,14 @@ Example:
 
 Available options:
 
----------------------------------------------------------------------------------------------------
-Name                    Type                    Default                             Description
----------------------------------------------------------------------------------------------------
-whitelist               File                    assembly-whitelist.txt              Validation template location
-projectOutputFile       String                  ${project.build.finalName}.zip      Archive to validate
-productVersion          String                  ${project.version}                  This project's version
-maven3StyleSnapshots    Boolean                 true                                Disable for Maven 2 builds
----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+|**Name**               |**Type**               |**Default**                        |**Description**|
+|-----------------------|-----------------------|-----------------------------------|-------------|
+|whitelist              |File                   |assembly-whitelist.txt             |Validation template location|
+|projectOutputFile      |String                 |${project.build.finalName}.zip     |Archive to validate|
+|productVersion         |String                 |${project.version}                 |This project's version|
+|maven3StyleSnapshots   |Boolean                |true                               |Disable for Maven 2 builds|
+|-----------------------|-----------------------|-----------------------------------|-------------|
 
 
 ## Known Issues
