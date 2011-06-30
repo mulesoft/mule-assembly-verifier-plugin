@@ -17,9 +17,9 @@ other problems like:
 This plugin solves above problems, often in a much friendlier way, and on top of that adds the following:
 
 * In case a validation failure is detected, the plugin reports:
-  * Missing entries from the distribution
-  * Unexpected entries which we didn't intend to package
-  * Duplicate entries - whenever a file has been included multiple times in the archive (typically due to the
+  * *Missing* entries from the distribution
+  * *Unexpected* entries which we didn't intend to package
+  * *Duplicate* entries - whenever a file has been included multiple times in the archive (typically due to the
     _assembly.xml_ configuration errors
 * Usability features
   * Current project's version is inferred and can be used in a validation template (see below)
