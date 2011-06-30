@@ -15,6 +15,7 @@ other problems like:
 * etc.
 
 This plugin solves above problems, often in a much friendlier way, and on top of that adds the following:
+
 * In case a validation failure is detected, the plugin reports:
   * Missing entries from the distribution
   * Unexpected entries which we didn't intend to package
@@ -23,12 +24,6 @@ This plugin solves above problems, often in a much friendlier way, and on top of
 * Usability features
   * Current project's version is inferred and can be used in a validation template (see below)
   * Maven 3-style snapshots are handled transparently (those pesky ones with the datestamp in the name instead of SNAPSHOT)
-
-
-* Item 1
-* Item 2
-  * Item 2a
-  * Item 2b
 
 ## Ok, I Saw the Light, "Show Me the Codes"!
 
