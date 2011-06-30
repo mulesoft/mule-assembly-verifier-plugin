@@ -144,6 +144,33 @@ Put a **assembly-whitelist.txt** file in your module root.
   generated content like javadoc where it could change with every build. The plugin will check the content is there
   (and fail if it's missing), but will treat everything under this dir as valid entries
 
+## Configuration Options
+
+Example:
+
+```xml
+    <plugin>
+        <groupId>org.mule.tools</groupId>
+        <artifactId>mule-assembly-verifier</artifactId>
+        <version>1.3</version>
+        <configuration>
+            <projectOutputFile>mule-standalone-nodocs-${project.version}.zip</projectOutputFile>
+        </configuration>
+    </plugin>
+```
+
+Available options:
+
+---------------------------------------------------------------------------------------------------
+Name                    Type                    Default                             Description
+---------------------------------------------------------------------------------------------------
+whitelist               File                    assembly-whitelist.txt              Validation template location
+projectOutputFile       String                  ${project.build.finalName}.zip      Archive to validate
+productVersion          String                  ${project.version}                  This project's version
+maven3StyleSnapshots    Boolean                 true                                Disable for Maven 2 builds
+---------------------------------------------------------------------------------------------------
+
+
 ## Known Issues
 
 * Maven 2 support is limited and will be removed in the future
