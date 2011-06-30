@@ -27,7 +27,7 @@ This plugin solves above problems, often in a much friendlier way, and on top of
 * Implicit audit of project dependency changes via validation template file commit history (immediately see who upgraded or added/removed
   a jar)
 
-## How Stable is it?
+## How Stable is It?
 
 The plugin has been developed for a Mule project and used by its builds for several years now. If it's good enough
 for a project with ~100 modules, chances are it's good enough for your case, too :) Recent version had major improvements
@@ -70,7 +70,7 @@ Add a snippet like the one below to your pom's *build/plugins* section (typicall
 The plugin is bound to the **verify** phase of the build, right after the **package**, and before **install**. If the distribution
 layout and contents fail to validate, the build will halt and validation report be printed.
 
-### (Optional) Declare Plugin Repository
+### (Optional) Declare a plugin repository
 
 This is only required until a released version is propagated to the maven central (may take a while) or when trying out
 a development snapshot:
@@ -78,7 +78,6 @@ a development snapshot:
 ```xml
     <pluginRepositories>
         <pluginRepository>
-            <!-- Mule Assembly Verifier Plugin snapshots hosted here -->
             <id>codehaus-plugin-snapshots</id>
             <name>Codehaus Plugin Snapshot Repository</name>
             <url>http://snapshots.repository.codehaus.org</url>
@@ -90,7 +89,6 @@ a development snapshot:
             </releases>
         </pluginRepository>
         <pluginRepository>
-            <!-- Mule Assembly Verifier Plugin snapshots hosted here -->
             <id>codehaus-plugins</id>
             <name>Codehaus Plugin Repository</name>
             <url>http://repository.codehaus.org</url>
@@ -106,7 +104,7 @@ a development snapshot:
 
 ### Create a validation template
 
-Put a **assembly-whitelist.txt** file in your project root.
+Put a **assembly-whitelist.txt** file in your module root.
 
 **Tip:** it's easier to start with a blank file and copy/paste the validation failure report for further editing, e.g.:
 
@@ -144,7 +142,7 @@ Put a **assembly-whitelist.txt** file in your project root.
   m3-style timestamped snapshots are supported
 * A special **mandatory wildcard** is supported by adding the + sign _at the end of the path_. Typical use case -
   generated content like javadoc where it could change with every build. The plugin will check the content is there
-  (and fail if it's missing), but will treat everything under this dir as valid content
+  (and fail if it's missing), but will treat everything under this dir as valid entries
 
 ## Known Issues
 
