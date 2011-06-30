@@ -17,17 +17,25 @@ other problems like:
 This plugin solves above problems, often in a much friendlier way, and on top of that adds the following:
 
 * In case a validation failure is detected, the plugin reports:
-  * *Missing* entries from the distribution
-  * *Unexpected* entries which we didn't intend to package
-  * *Duplicate* entries - whenever a file has been included multiple times in the archive (typically due to the
-    _assembly.xml_ configuration errors
+  * **Missing** entries from the distribution
+  * **Unexpected** entries which we didn't intend to package
+  * **Duplicate** entries - whenever a file has been included multiple times in the archive (typically due to the
+    _assembly.xml_ configuration errors)
 * Usability features
   * Current project's version is inferred and can be used in a validation template (see below)
   * Maven 3-style snapshots are handled transparently (those pesky ones with the datestamp in the name instead of SNAPSHOT)
 
+## How Stable is it?
+
+The plugin has been developed for a Mule project and has been used by its builds for several years now. If it's good enough
+for a project with ~100 modules, chances are it's good enough for your case, too :) Recent version had major improvements
+and is no longer tied to Mule - the validation became generic. The Mule name is the (beloved) legacy in the name and nothing else.
+
 ## Ok, I Saw the Light, "Show Me the Codes"!
 
-Add a snippet like the one below to your pom's *build/plugins* section:
+### Add plugin to the build
+
+Add a snippet like the one below to your pom's *build/plugins* section (typically the same module where your assembly is created):
 
 ```xml
         <plugin>
@@ -57,6 +65,30 @@ Add a snippet like the one below to your pom's *build/plugins* section:
         </plugin>
 ```
 
-The plugin is bound to the *verify* phase of the build, right after the *package*, and before *install*. If the distribution
+The plugin is bound to the **verify** phase of the build, right after the **package**, and before **install**. If the distribution
 layout and contents fail to validate, the build will halt and validation report be printed.
 
+### Create a validation template
+
+Put a **assembly-whitelist.txt** file in your project root.
+
+**Tip:** it's easier to start with a blank file and copy/paste the validation failure report for further editing, e.g.:
+
+```
+#
+# Distribution root
+#
+/mule-standalone-${productVersion}
+/mule-standalone-${productVersion}/apps
+/mule-standalone-${productVersion}/bin
+
+#
+# /apps
+#
+/mule-standalone-${productVersion}/apps/default
+/mule-standalone-${productVersion}/apps/default/mule-config.xml
+
+/mule-standalone-${productVersion}/lib/opt/commons-lang-2.4.jar
+/mule-standalone-${productVersion}/lib/opt/commons-net-2.0.jar
+/mule-standalone-${productVersion}/lib/opt/commons-pool-1.5.3.jar
+```
