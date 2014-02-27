@@ -24,8 +24,10 @@ This plugin solves above problems, often in a much friendlier way, and on top of
 * Usability features
   * Current project's version is inferred and can be used in a validation template (see below)
   * Maven 3-style snapshots are handled transparently (those pesky ones with the datestamp in the name instead of SNAPSHOT)
+  * You can skip validation using the skip configuraiton parameter. This allows to disable validation on some profiles/properties.
 * Implicit audit of project dependency changes via validation template file commit history (immediately see who upgraded or added/removed
   a jar)
+
 
 ## How Stable is It?
 
@@ -43,7 +45,7 @@ Add a snippet like the one below to your pom's *build/plugins* section (typicall
         <plugin>
             <groupId>org.mule.tools</groupId>
             <artifactId>mule-assembly-verifier</artifactId>
-            <version>1.3</version>
+            <version>1.4</version>
             <dependencies>
                 <!--
                     Declare a compatible groovy dependency for this plugin to avoid
@@ -168,6 +170,7 @@ Available options:
 |projectOutputFile      |String                 |${project.build.finalName}.zip     |Archive to validate|
 |productVersion         |String                 |${project.version}                 |This project's version|
 |maven3StyleSnapshots   |Boolean                |true                               |Disable for Maven 2 builds|
+|skip                   |Boolean                |false                              |Disable execution|
 
 
 ## Known Issues

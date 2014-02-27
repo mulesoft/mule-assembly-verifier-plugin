@@ -39,6 +39,12 @@ class AssemblyContentsVerifier extends GroovyMojo
     Boolean maven3StyleSnapshots
 
     /**
+     * Skip execution of this plugin, allowing to control the behaviour using profiles.
+     * @parameter default-value=false
+     */
+    Boolean skip
+
+    /**
      * Project instance.
      * @parameter default-value="${project}"
      * @required
@@ -53,6 +59,12 @@ class AssemblyContentsVerifier extends GroovyMojo
     List whitelistEntries = []
 
     void execute() {
+        // Potentially skip execution
+        if (skip) {
+            log.info("Skipping assembly verification.")
+            return
+        }
+
         // sanity check
         if (!whitelist.exists()) {
             throw new MojoExecutionException("Whitelist file $whitelist does not exist.")
