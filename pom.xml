@@ -84,21 +84,16 @@
     </build>
 
     <distributionManagement>
-        <!-- 
-             As this plugin is used in Mule's build, we don't release into the forge 
-             but rather into our custom Mule repo.
-        -->
         <repository>
             <id>mule-releases</id>
             <name>Mule Release Repository</name>
-            <url>dav:https://dav.codehaus.org/repository/mule/</url>
+            <url>https://repository-master.mulesoft.org/nexus/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>mule-snapshots</id>
             <name>Mule Snapshot Repository</name>
-            <url>dav:https://dav.codehaus.org/snapshots.repository/mule/</url>
+            <url>https://repository-master.mulesoft.org/nexus/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
-
     </distributionManagement>
 </project>
