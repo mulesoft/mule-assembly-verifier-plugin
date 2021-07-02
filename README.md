@@ -1,3 +1,4 @@
+[comment]: <> (//@todo: Should we add something about the new Mojo?)
 # Summary
 
 Mule Assembly Verifier is a Maven 3 plugin providing fine-grained validation of the assembly/distribution contents.
@@ -106,7 +107,7 @@ a development snapshot:
 
 ### Create a validation template
 
-Put a **assembly-whitelist.txt** file in your module root.
+Put a **assembly-allowlist.txt** file in your module root.
 
 **Tip:** it's easier to start with a blank file and copy/paste the validation failure report for further editing, e.g.:
 
@@ -166,7 +167,7 @@ Available options:
 ----------------------------------------------------------------------------------------------------
 |**Name**               |**Type**               |**Default**                        |**Description**|
 |-----------------------|-----------------------|-----------------------------------|-------------|
-|whitelist              |File                   |assembly-whitelist.txt             |Validation template location|
+|allowlist              |File                   |assembly-allowlist.txt             |Validation template location|
 |projectOutputFile      |String                 |${project.build.finalName}.zip     |Archive to validate|
 |productVersion         |String                 |${project.version}                 |This project's version|
 |maven3StyleSnapshots   |Boolean                |true                               |Disable for Maven 2 builds|

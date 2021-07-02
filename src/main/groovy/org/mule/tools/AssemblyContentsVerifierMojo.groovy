@@ -1,62 +1,63 @@
 package org.mule.tools
 
-import org.apache.maven.plugin.MojoFailureException
+import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
+import org.apache.maven.plugin.MojoFailureException
+import org.apache.maven.plugins.annotations.Mojo
+import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
-import org.codehaus.gmaven.mojo.GroovyMojo
+
 import java.util.regex.Pattern
 import java.util.zip.ZipFile
 
 /**
- * @goal verify
+ * Mojo for verifying contents of the output assembly against a controlled set of libraries.
  */
-class AssemblyContentsVerifier extends GroovyMojo
-{
+@Mojo(name = "verify")
+class AssemblyContentsVerifierMojo extends AbstractMojo {
     /**
      * The library list to check against.
-     *
-     * @parameter default-value="assembly-whitelist.txt"
      */
-    File whitelist
+    @Parameter(defaultValue = 'assembly-allowlist.txt')
+    File allowlist
 
     /**
      * File name whose contents will be verified.
-     * @parameter default-value="${project.build.finalName}.zip"
      */
+    @Parameter(defaultValue = '${project.build.finalName}.zip')
     String projectOutputFile
 
     /**
      * Version of the product to be verified. Used in path expressions.
-     * @parameter default-value="${project.version}"
      */
+    @Parameter(defaultValue = '${project.version}')
     String productVersion
 
     /**
      * Maven 3 dropped non-unique snapshots support and always timestamps artifacts on deploy. When 'true',
      * such artifacts will be treated specially in the distribution. Disable the flag for Maven 2 based builds.
-     * @parameter default-value=true
      */
+    @Parameter(defaultValue = 'true')
     Boolean maven3StyleSnapshots
 
     /**
      * Skip execution of this plugin, allowing to control the behaviour using profiles.
-     * @parameter default-value=false
      */
+    @Parameter(defaultValue = 'false')
     Boolean skip
 
     /**
      * Project instance.
-     * @parameter default-value="${project}"
-     * @required
-     * @readonly
      */
+    @Parameter(defaultValue = '${project}', required = true, readonly = true)
     MavenProject project
+
     def outputFile
     def version
     def pattern
 
     Set mandatoryWildcards = []
-    List whitelistEntries = []
+    List allowlistEntries = []
 
     void execute() {
         // Potentially skip execution
@@ -66,8 +67,8 @@ class AssemblyContentsVerifier extends GroovyMojo
         }
 
         // sanity check
-        if (!whitelist.exists()) {
-            throw new MojoExecutionException("Whitelist file $whitelist does not exist.")
+        if (!allowlist.exists()) {
+            throw new MojoExecutionException("Whitelist file $allowlist does not exist.")
         }
 
         // splash
@@ -81,21 +82,21 @@ class AssemblyContentsVerifier extends GroovyMojo
             throw new MojoExecutionException("Output file $outputFile  does not exist.")
         }
 
-        // process whitelist
-        whitelist.eachLine() {
+        // process allowlist
+        allowlist.eachLine() {
             // ignore comments and empty lines
             if (!it.startsWith('#') && it.trim().size() != 0) {
                 // canonicalize and interpolate the entry
-                whitelistEntries << it.replaceAll("\\\\", "/").replaceAll(Pattern.quote('${productVersion}'), productVersion)
+                allowlistEntries << it.replaceAll("\\\\", "/").replaceAll(Pattern.quote('${productVersion}'), productVersion)
             }
         }
 
-        mandatoryWildcards = whitelistEntries.findAll {
+        mandatoryWildcards = allowlistEntries.findAll {
             it.endsWith('+')
         }
 
         // wildcards will be checked explicitly, move them out of the way for regular validation
-        whitelistEntries.removeAll(mandatoryWildcards)
+        allowlistEntries.removeAll(mandatoryWildcards)
 
         // strip the trailing + sign
         mandatoryWildcards = mandatoryWildcards.collect {
@@ -106,8 +107,9 @@ class AssemblyContentsVerifier extends GroovyMojo
         def root = new File("${project.build.directory}/mule-assembly-verifier-temp")
 
         // unpack archive
-        ant.unzip(src: outputFile,
-                  dest: root)
+        // @todo: Validate if this api is accepted
+        new net.lingala.zip4j.ZipFile(outputFile).extractAll("${root}");
+        // ant.unzip(src: outputFile, dest: root)
 
         def canonicalRootPath = root.canonicalPath.replaceAll("\\\\", "/")
 
@@ -156,7 +158,7 @@ class AssemblyContentsVerifier extends GroovyMojo
     }
 
     def findMissing(actualNames) {
-        // find all whitelist entries which are missing
+        // find all allowlist entries which are missing
 
         // for maven3-style timestamped snapshots
         def processedActualNames = []
@@ -174,7 +176,7 @@ class AssemblyContentsVerifier extends GroovyMojo
             }
         }
 
-        whitelistEntries.findAll {
+        allowlistEntries.findAll {
             if (!maven3StyleSnapshots) {
                 return !actualNames.contains(it)
             } else {
@@ -184,31 +186,31 @@ class AssemblyContentsVerifier extends GroovyMojo
     }
 
     def findUnexpected(actualNames) {
-        if (!whitelistEntries) {
-            // whitelist is empty, assume every entry is unexpected
+        if (!allowlistEntries) {
+            // allowlist is empty, assume every entry is unexpected
             return actualNames;
         }
 
-        // find all entries not in the whitelist
+        // find all entries not in the allowlist
         actualNames.findAll {
             if (!maven3StyleSnapshots) {
-                return !whitelistEntries.contains(it)
+                return !allowlistEntries.contains(it)
             } else {
                 // pre-process the actual filename to look for a match by replacing m3 snapshot timestamp
                 // with just a "-SNAPSHOT" for comparison
                 def matcher = pattern.matcher(it)
                 if (matcher.find()) {
                     def processed = matcher.replaceAll("$version-SNAPSHOT")
-                    if (!whitelistEntries.contains(processed)) {
+                    if (!allowlistEntries.contains(processed)) {
                         // no direct match, check against the mandatory wildcard (entry ending with '+')
                         return mandatoryWildcards.find { w -> processed.startsWith(w) } == null
                     }
                     return false
                 }
                 // don't process the name, regular lookup
-                if (!whitelistEntries.contains(it)) {
+                if (!allowlistEntries.contains(it)) {
                     // no direct match, check against the mandatory wildcard (entry ending with '+')
-                    return mandatoryWildcards.find { w -> it.startsWith(w)} == null
+                    return mandatoryWildcards.find { w -> it.startsWith(w) } == null
                 }
                 return false
             }
