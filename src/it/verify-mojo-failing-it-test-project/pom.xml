@@ -17,7 +17,7 @@
                 <version>3.3.0</version>
                 <configuration>
                     <appendAssemblyId>false</appendAssemblyId>
-                    <finalName>foo-assembly-${project.version}</finalName>
+                    <finalName>the-assembly-${project.version}</finalName>
                     <descriptors>
                         <descriptor>src/assembly/distribution.xml</descriptor>
                     </descriptors>
@@ -43,7 +43,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <projectOutputFile>foo-assembly-${project.version}.zip</projectOutputFile>
+                            <projectOutputFile>the-assembly-${project.version}.zip</projectOutputFile>
                             <skip>false</skip>
                         </configuration>
                     </execution>

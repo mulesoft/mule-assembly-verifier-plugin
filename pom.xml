@@ -145,7 +145,7 @@
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                     <postBuildHookScript>verify</postBuildHookScript>
                     <writeJunitReport>true</writeJunitReport>
-                    <junitPackageName>${groupId}.invoker.it</junitPackageName>
+                    <junitPackageName>${project.groupId}.invoker.it</junitPackageName>
                     <goals>
                         <goal>clean</goal>
                         <goal>package</goal>

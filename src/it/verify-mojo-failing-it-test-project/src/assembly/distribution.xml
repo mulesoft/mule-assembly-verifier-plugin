@@ -12,12 +12,12 @@
             <source>src/main/resources/assembly-content/README.md</source>
         </file>
         <file>
-            <source>src/main/resources/assembly-content/foo.conf</source>
+            <source>src/main/resources/assembly-content/a-config.conf</source>
             <outputDirectory>conf</outputDirectory>
         </file>
         <file>
-            <source>src/main/resources/assembly-content/foo.jar</source>
-            <outputDirectory>lib/foo</outputDirectory>
+            <source>src/main/resources/assembly-content/a-jar.jar</source>
+            <outputDirectory>lib/opt</outputDirectory>
         </file>
     </files>
 </assembly>

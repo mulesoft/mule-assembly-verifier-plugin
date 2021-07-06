@@ -1,18 +1,18 @@
 #
 # root
 #
-/foo-assembly-${productVersion}
-/foo-assembly-${productVersion}/conf
-/foo-assembly-${productVersion}/lib
-/foo-assembly-${productVersion}/README.md
+/the-assembly-${productVersion}
+/the-assembly-${productVersion}/conf
+/the-assembly-${productVersion}/lib
+/the-assembly-${productVersion}/README.md
 
 #
 # /conf
 #
-/foo-assembly-${productVersion}/conf/foo.conf
+/the-assembly-${productVersion}/conf/a-config.conf
 
 #
-# /lib/foo
+# /lib/opt
 #
-/foo-assembly-${productVersion}/lib/foo
-/foo-assembly-${productVersion}/lib/foo/foo.jar
+/the-assembly-${productVersion}/lib/opt
+/the-assembly-${productVersion}/lib/opt/a-jar.jar

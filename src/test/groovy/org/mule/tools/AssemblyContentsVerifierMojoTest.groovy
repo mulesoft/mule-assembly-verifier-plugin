@@ -38,8 +38,8 @@ class AssemblyContentsVerifierMojoTest {
                 .isInstanceOf(MojoFailureException.class)
                 .hasMessageMatching("(?s)The following problems have been encountered:\\s+" +
                         "Missing from the Distribution:\\s+" +
-                        "1\\. /foo-assembly-1.0.0/lib/foo/bar.jar\\s+" +
+                        "1\\. /the-assembly-1.0.0/lib/opt/another-jar.jar\\s+" +
                         "Unexpected entries in the Distribution:\\s+" +
-                        "1\\. /foo-assembly-1.0.0/lib/foo/foo.jar\\s+")
+                        "1\\. /the-assembly-1.0.0/lib/opt/a-jar.jar\\s+")
     }
 }
