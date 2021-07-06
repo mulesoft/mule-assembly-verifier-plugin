@@ -20,14 +20,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.version>3.3.9</maven.version>
-        <groovy.version>3.0.7</groovy.version>
+        <maven.version>3.8.1</maven.version>
+        <groovy.version>3.0.8</groovy.version>
         <zip4j.version>2.9.0</zip4j.version>
-        <maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
-        <junit.version>4.12</junit.version>
+        <maven-plugin-annotations.version>3.6.1</maven-plugin-annotations.version>
+        <junit.version>4.13.2</junit.version>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
-        <assertj-core.version>3.11.1</assertj-core.version>
-        <maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
+        <assertj-core.version>3.20.2</assertj-core.version>
+        <maven-plugin-plugin.version>3.6.1</maven-plugin-plugin.version>
         <gmavenplus-plugin.version>1.12.1</gmavenplus-plugin.version>
         <maven-invoker-plugin.version>3.2.2</maven-invoker-plugin.version>
     </properties>
