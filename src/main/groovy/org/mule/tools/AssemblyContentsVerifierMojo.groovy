@@ -11,7 +11,7 @@ import java.util.regex.Pattern
 import java.util.zip.ZipFile
 
 /**
- * Mojo for verifying contents of the output assembly against a controlled set of libraries.
+ * Mojo for verifying contents of the output assembly against a controlled allowlist of files
  */
 @Mojo(name = "verify")
 class AssemblyContentsVerifierMojo extends AbstractMojo {
