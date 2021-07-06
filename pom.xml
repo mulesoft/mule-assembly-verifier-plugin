@@ -10,9 +10,8 @@
     <packaging>maven-plugin</packaging>
     <name>Mule Assembly Verifier Plugin</name>
 
-    <!-- //@todo[@theales]: What do you think about this new description? -->
     <description>
-        Provide goals for performing important tasks in the Mule's distro assembly lifecycle like verify its contents or
+        Provide utility goals to perform tasks in the Mule's distribution assembly lifecycle like verifying its contents or
         generating its descriptor
     </description>
 
