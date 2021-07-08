@@ -29,6 +29,7 @@
         <maven-plugin-plugin.version>3.6.1</maven-plugin-plugin.version>
         <gmavenplus-plugin.version>1.12.1</gmavenplus-plugin.version>
         <maven-invoker-plugin.version>3.2.2</maven-invoker-plugin.version>
+        <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -94,6 +95,21 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <skip>${skipTests}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
