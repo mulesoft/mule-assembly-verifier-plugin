@@ -1,6 +1,8 @@
 //@todo: Should we add any copyright headers
 package org.mule.tools
 
+import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.model.FileHeader
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.Mojo
@@ -39,26 +41,38 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
     MavenProject project
 
     def outputFile
+
     void execute() {
 
-        // Potentially skip execution
         if (skip) {
             log.info("Skipping descriptor generation.")
             return
         }
 
-        // splash
+        printSplash()
+
+        // confirm output file is available
+        outputFile = getAssemblyFile()
+
+        println outputFile
+
+        List<FileHeader> fileHeaders = new ZipFile(outputFile).getFileHeaders();
+        fileHeaders.each { fileHeader -> println(fileHeader.getFileName()) }
+
+    }
+
+    private void printSplash() {
         log.info "*" * 80
         log.info("Generating descriptor for the assembly".center(80))
         log.info "*" * 80
+    }
 
-        // confirm output file is available
+    private File getAssemblyFile() {
         outputFile = new File("$project.build.directory/$projectOutputFile")
         if (!outputFile.exists()) {
             throw new MojoExecutionException("Output file $outputFile does not exist.")
         }
-
-
+        outputFile
     }
 
 }
