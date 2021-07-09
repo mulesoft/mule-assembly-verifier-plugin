@@ -29,6 +29,17 @@ class AssemblyContentsVerifierMojoTest {
     }
 
     @Test
+    void verifyExecutionMaven2StyleSnapshotsTest() throws Exception {
+        File pom = Paths.get("target", "test-classes", "verify-mojo-maven2-style-snapshots-test-project").toFile()
+        assertNotNull(pom)
+        assertTrue(pom.exists())
+
+        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(pom, "verify")
+        assertNotNull(verifierMojo)
+        verifierMojo.execute()
+    }
+
+    @Test
     void verifyFiledExecutionTest() throws Exception {
         File pom = Paths.get("target", "test-classes", "verify-mojo-test-failing-project").toFile()
         assertNotNull(pom)
