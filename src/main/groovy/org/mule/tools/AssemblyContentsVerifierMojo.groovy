@@ -79,7 +79,7 @@ class AssemblyContentsVerifierMojo extends AbstractMojo {
         // confirm output file is available
         outputFile = new File("$project.build.directory/$projectOutputFile")
         if (!outputFile.exists()) {
-            throw new MojoExecutionException("Output file $outputFile  does not exist.")
+            throw new MojoExecutionException("Output file $outputFile does not exist.")
         }
 
         // process allowlist

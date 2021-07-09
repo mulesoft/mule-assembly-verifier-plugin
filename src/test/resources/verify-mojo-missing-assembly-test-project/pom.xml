@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mule.tools</groupId>
-    <artifactId>verify-mojo-failing-test-project</artifactId>
+    <artifactId>verify-mojo-missing-assembly-test-project</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
