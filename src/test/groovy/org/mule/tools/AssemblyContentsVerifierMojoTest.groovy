@@ -19,7 +19,7 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void verifyExecutionTest() throws Exception {
-        File pom = Paths.get("target","test-classes","verify-mojo-test-project").toFile()
+        File pom = Paths.get("target", "test-classes", "verify-mojo-test-project").toFile()
         assertNotNull(pom)
         assertTrue(pom.exists())
 
@@ -30,7 +30,7 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void verifyFiledExecutionTest() throws Exception {
-        File pom = Paths.get("target","test-classes","verify-mojo-test-failing-project").toFile()
+        File pom = Paths.get("target", "test-classes", "verify-mojo-test-failing-project").toFile()
         assertNotNull(pom)
         assertTrue(pom.exists())
 
@@ -41,14 +41,16 @@ class AssemblyContentsVerifierMojoTest {
                 .isInstanceOf(MojoFailureException.class)
                 .hasMessageMatching("(?s)The following problems have been encountered:\\s+" +
                         "Missing from the Distribution:\\s+" +
-                        "1\\. /the-assembly-1.0.0/lib/opt/another-jar.jar\\s+" +
+                        "1\\. /the-assembly-1.0.0/lib/opt/missing.jar\\s+" +
                         "Unexpected entries in the Distribution:\\s+" +
-                        "1\\. /the-assembly-1.0.0/lib/opt/a-jar.jar\\s+")
+                        "1\\. /the-assembly-1.0.0/lib/opt/unexpected.jar\\s+" +
+                        "Duplicate entries in the Distribution:\\s+" +
+                        "1\\. the-assembly-1.0.0/duplicated/duplicated-1.0.0-SNAPSHOT.jar\\s+")
     }
 
     @Test
     void missingAllowlistTest() throws Exception {
-        File pom = Paths.get("target","test-classes","verify-mojo-test-missing-allowlist-project").toFile()
+        File pom = Paths.get("target", "test-classes", "verify-mojo-test-missing-allowlist-project").toFile()
         assertNotNull(pom)
         assertTrue(pom.exists())
 
@@ -62,7 +64,7 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void missingAssemblyTest() throws Exception {
-        File pom = Paths.get("target","test-classes","verify-mojo-missing-assembly-test-project").toFile()
+        File pom = Paths.get("target", "test-classes", "verify-mojo-missing-assembly-test-project").toFile()
         assertNotNull(pom)
         assertTrue(pom.exists())
 

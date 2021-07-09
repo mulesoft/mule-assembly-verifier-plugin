@@ -1,9 +1,30 @@
+# ### ############################################################################################################################
+# ### The real zip file content
+# ### ############################################################################################################################
+# Archive:  src/test/resources/verify-mojo-test-failing-project/target/verify-mojo-failing-test-project-1.0.0.zip
+#   Length      Date    Time    Name
+# ---------  ---------- -----   ----
+#         0  07-09-2021 13:03   the-assembly-1.0.0/
+#         0  07-09-2021 13:19   the-assembly-1.0.0/duplicated/
+#         0  07-09-2021 13:19   the-assembly-1.0.0/duplicated/duplicated-1.0.0-20210318.230219-240.jar
+#         0  07-09-2021 12:23   the-assembly-1.0.0/duplicated/duplicated-1.0.0-20210318.230219-238.jar
+#         0  07-04-2021 18:40   the-assembly-1.0.0/README.md
+#         0  07-06-2021 10:58   the-assembly-1.0.0/lib/
+#         0  07-09-2021 13:18   the-assembly-1.0.0/lib/opt/
+#         0  07-04-2021 18:40   the-assembly-1.0.0/lib/opt/unexpected.jar
+#         0  07-06-2021 10:58   the-assembly-1.0.0/conf/
+#         0  07-04-2021 18:40   the-assembly-1.0.0/conf/a-config.conf
+# ---------                     -------
+#         0                     10 files
+# ### ############################################################################################################################
+
 #
 # root
 #
 /the-assembly-${productVersion}
 /the-assembly-${productVersion}/conf
 /the-assembly-${productVersion}/lib
+/the-assembly-${productVersion}/duplicated
 /the-assembly-${productVersion}/README.md
 
 #
@@ -15,4 +36,9 @@
 # /lib/opt
 #
 /the-assembly-${productVersion}/lib/opt
-/the-assembly-${productVersion}/lib/opt/another-jar.jar
+/the-assembly-${productVersion}/lib/opt/missing.jar
+
+#
+# /duplicated
+#
+/the-assembly-${productVersion}/duplicated/+
