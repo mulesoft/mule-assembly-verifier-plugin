@@ -1,5 +1,6 @@
 package org.mule.tools
 
+import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugin.testing.MojoRule
 import org.junit.Rule
@@ -41,5 +42,19 @@ class AssemblyContentsVerifierMojoTest {
                         "1\\. /the-assembly-1.0.0/lib/opt/another-jar.jar\\s+" +
                         "Unexpected entries in the Distribution:\\s+" +
                         "1\\. /the-assembly-1.0.0/lib/opt/a-jar.jar\\s+")
+    }
+
+    @Test
+    void missingAllowlistTest() throws Exception {
+        File pom = new File("target/test-classes/verify-mojo-test-missing-allowlist-project/");
+        assertNotNull(pom);
+        assertTrue(pom.exists());
+
+        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(pom, "verify");
+        assertNotNull(verifierMojo);
+
+        assertThatThrownBy(() -> verifierMojo.execute())
+                .isInstanceOf(MojoExecutionException.class)
+                .hasMessageMatching("Allowlist file .*assembly-allowlist.txt does not exist.")
     }
 }

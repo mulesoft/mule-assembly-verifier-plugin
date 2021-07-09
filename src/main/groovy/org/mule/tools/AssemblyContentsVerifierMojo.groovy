@@ -68,7 +68,7 @@ class AssemblyContentsVerifierMojo extends AbstractMojo {
 
         // sanity check
         if (!allowlist.exists()) {
-            throw new MojoExecutionException("Whitelist file $allowlist does not exist.")
+            throw new MojoExecutionException("Allowlist file $allowlist does not exist.")
         }
 
         // splash
