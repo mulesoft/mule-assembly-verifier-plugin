@@ -94,6 +94,8 @@
     </dependencies>
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/groovy</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/groovy</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -165,6 +167,8 @@
                         <goal>clean</goal>
                         <goal>package</goal>
                     </goals>
+                    <!-- For executing with JaCoCo agent -->
+                    <mavenOpts>${argLine}</mavenOpts>
                     <scriptVariables>
                         <pluginVersion>${project.version}</pluginVersion>
                     </scriptVariables>
