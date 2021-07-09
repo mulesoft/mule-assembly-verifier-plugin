@@ -106,10 +106,7 @@ class AssemblyContentsVerifierMojo extends AbstractMojo {
         // temp directory to unpack to
         def root = new File("${project.build.directory}/mule-assembly-verifier-temp")
 
-        // unpack archive
-        // @todo: Validate if this api is accepted
         new net.lingala.zip4j.ZipFile(outputFile).extractAll("${root}");
-        // ant.unzip(src: outputFile, dest: root)
 
         def canonicalRootPath = root.canonicalPath.replaceAll("\\\\", "/")
 
