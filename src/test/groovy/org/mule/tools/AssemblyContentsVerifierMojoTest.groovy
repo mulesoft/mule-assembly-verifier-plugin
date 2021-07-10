@@ -3,6 +3,7 @@ package org.mule.tools
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
 import org.apache.maven.plugin.testing.MojoRule
+import org.codehaus.plexus.configuration.PlexusConfiguration
 import org.junit.Rule
 import org.junit.Test
 
@@ -19,33 +20,41 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void verifyExecutionTest() throws Exception {
-        File pom = Paths.get("target", "test-classes", "verify-mojo-test-project").toFile()
-        assertNotNull(pom)
-        assertTrue(pom.exists())
+        File baseDir = Paths.get("target", "test-classes", "verify-mojo-test-project").toFile()
+        assertNotNull(baseDir)
+        assertTrue(baseDir.exists())
 
-        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(pom, "verify")
+        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
         verifierMojo.execute()
     }
 
     @Test
     void verifyExecutionMaven2StyleSnapshotsTest() throws Exception {
-        File pom = Paths.get("target", "test-classes", "verify-mojo-maven2-style-snapshots-test-project").toFile()
+        File baseDir = Paths.get("target", "test-classes", "verify-mojo-maven2-style-snapshots-test-project").toFile()
+        assertNotNull(baseDir)
+        assertTrue(baseDir.exists())
+
+        File pom = new File(baseDir, "pom.xml")
         assertNotNull(pom)
         assertTrue(pom.exists())
 
-        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(pom, "verify")
+        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
+
+        PlexusConfiguration configuration = rule.extractPluginConfiguration("mule-assembly-verifier", pom)
+        rule.configureMojo(verifierMojo, configuration)
+
         verifierMojo.execute()
     }
 
     @Test
     void verifyFiledExecutionTest() throws Exception {
-        File pom = Paths.get("target", "test-classes", "verify-mojo-test-failing-project").toFile()
-        assertNotNull(pom)
-        assertTrue(pom.exists())
+        File baseDir = Paths.get("target", "test-classes", "verify-mojo-test-failing-project").toFile()
+        assertNotNull(baseDir)
+        assertTrue(baseDir.exists())
 
-        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(pom, "verify")
+        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
 
         assertThatThrownBy(() -> verifierMojo.execute())
@@ -61,11 +70,11 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void missingAllowlistTest() throws Exception {
-        File pom = Paths.get("target", "test-classes", "verify-mojo-test-missing-allowlist-project").toFile()
-        assertNotNull(pom)
-        assertTrue(pom.exists())
+        File baseDir = Paths.get("target", "test-classes", "verify-mojo-test-missing-allowlist-project").toFile()
+        assertNotNull(baseDir)
+        assertTrue(baseDir.exists())
 
-        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(pom, "verify")
+        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
 
         assertThatThrownBy(() -> verifierMojo.execute())
@@ -75,11 +84,11 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void missingAssemblyTest() throws Exception {
-        File pom = Paths.get("target", "test-classes", "verify-mojo-missing-assembly-test-project").toFile()
-        assertNotNull(pom)
-        assertTrue(pom.exists())
+        File baseDir = Paths.get("target", "test-classes", "verify-mojo-missing-assembly-test-project").toFile()
+        assertNotNull(baseDir)
+        assertTrue(baseDir.exists())
 
-        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(pom, "verify")
+        AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
 
         assertThatThrownBy(() -> verifierMojo.execute())

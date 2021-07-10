@@ -4,9 +4,7 @@
 # Archive:  src/test/resources/verify-mojo-maven2-style-snapshots-test-project/target/verify-mojo-maven2-style-snapshots-test-project-1.0.0.zip
 #   Length      Date    Time    Name
 # ---------  ---------- -----   ----
-#         0  07-09-2021 13:53   the-assembly-1.0.0/
-#         0  07-09-2021 12:02   the-assembly-1.0.0/wildcards/
-#         0  07-09-2021 12:02   the-assembly-1.0.0/wildcards/covered-by-wildcards.jar
+#         0  07-10-2021 09:35   the-assembly-1.0.0/
 #         0  07-04-2021 18:40   the-assembly-1.0.0/README.md
 #         0  07-09-2021 13:54   the-assembly-1.0.0/maven2StyleSnapshots/
 #         0  07-09-2021 12:09   the-assembly-1.0.0/maven2StyleSnapshots/a-jar-1.0.0-SNAPSHOT.jar
@@ -16,7 +14,7 @@
 #         0  07-06-2021 10:58   the-assembly-1.0.0/conf/
 #         0  07-04-2021 18:40   the-assembly-1.0.0/conf/a-config.conf
 # ---------                     -------
-#         0                     11 files
+#         0                     9 files
 # ### ############################################################################################################################
 
 #
@@ -26,7 +24,6 @@
 /the-assembly-${productVersion}/conf
 /the-assembly-${productVersion}/lib
 /the-assembly-${productVersion}/README.md
-/the-assembly-${productVersion}/wildcards
 /the-assembly-${productVersion}/maven2StyleSnapshots
 
 #
@@ -41,11 +38,6 @@
 /the-assembly-${productVersion}/lib/opt/a-jar.jar
 
 #
-# /wildcards
-#
-/the-assembly-${productVersion}/wildcards/+
-
-#
-# /maven3StyleSnapshots
+# /maven2StyleSnapshots
 #
 /the-assembly-${productVersion}/maven2StyleSnapshots/a-jar-1.0.0-SNAPSHOT.jar
