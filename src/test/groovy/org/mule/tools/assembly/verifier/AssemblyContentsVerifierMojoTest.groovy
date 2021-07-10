@@ -1,4 +1,4 @@
-package org.mule.tools
+package org.mule.tools.assembly.verifier
 
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException

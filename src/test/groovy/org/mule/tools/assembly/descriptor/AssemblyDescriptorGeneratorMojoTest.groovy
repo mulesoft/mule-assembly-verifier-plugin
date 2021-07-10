@@ -1,11 +1,8 @@
-package org.mule.tools
+package org.mule.tools.assembly.descriptor
 
 import org.apache.maven.plugin.testing.MojoRule
 import org.junit.Rule
 import org.junit.Test
-
-import static org.junit.Assert.assertNotNull
-import static org.junit.Assert.assertTrue
 
 class AssemblyDescriptorGeneratorMojoTest {
 
@@ -15,11 +12,11 @@ class AssemblyDescriptorGeneratorMojoTest {
     @Test
     void verifyExecutionTest() throws Exception {
         File pom = new File("target/test-classes/descriptor-mojo-test-project/");
-        assertNotNull(pom);
-        assertTrue(pom.exists());
+        org.junit.Assert.assertNotNull(pom);
+        org.junit.Assert.assertTrue(pom.exists());
 
         AssemblyDescriptorGeneratorMojo verifierMojo = (AssemblyDescriptorGeneratorMojo) rule.lookupConfiguredMojo(pom, "descriptor");
-        assertNotNull(verifierMojo);
+        org.junit.Assert.assertNotNull(verifierMojo);
         verifierMojo.execute();
     }
 
