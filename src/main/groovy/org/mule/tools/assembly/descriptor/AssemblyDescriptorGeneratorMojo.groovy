@@ -8,8 +8,6 @@ import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
 
-import java.nio.file.Paths
-
 /**
  * // @todo: Add a brief explanation of:
  * // - What do we mean by a descriptor
@@ -22,10 +20,16 @@ import java.nio.file.Paths
 class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
 
     /**
-     * Name of the assembly file whose descriptor will be generated.
+     * Assembly file whose descriptor will be generated.
      */
-    @Parameter(defaultValue = '${project.build.finalName}.zip')
-    String assemblyFileName
+    @Parameter(defaultValue = '${project.build.directory}/${project.build.finalName}.zip')
+    File assemblyFile
+
+    /**
+     * Temporary director for the work carried out by this mojo
+     */
+    @Parameter(defaultValue = '${project.build.directory}/mule-assembly-descriptor-temp')
+    File descriptorTempDir
 
     /**
      * Skip execution of this mojo.
@@ -48,33 +52,37 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
 
         printSplash()
 
-        // 1. Build descriptor
-        // INPUT: Archive
-        // OUTPUT: Path of the descriptor file in the target folder
-        // EXCEPTIONS: File not found
+        try {
+            // 1. Build descriptor
+            // INPUT: Archive
+            // OUTPUT: Path of the descriptor file in the target folder
+            // EXCEPTIONS: File not found
+            AssemblyContentDescriptorGenerator descriptorGenerator = new AssemblyContentDescriptorGenerator(
+                    log: log,
+                    assemblyFile: assemblyFile,
+                    descriptorTempDir: descriptorTempDir)
 
-        // 2. Generate jar with descriptor and copies of files
-        // INPUT: Descriptor, paths of files to copy
-        // OUTPUT: Path of the descriptor archive
-        // EXCEPTIONS: Files not found
+            File assemblyContentDescriptor = descriptorGenerator.generateDescriptor()
 
-        // 3. Attach descriptor
-        // INPUT: The descriptor archive
-        // OUTPUT: (Side effect) --> Archive with the descriptor archive added
-        // EXCEPTIONS: Files not found
+//            println assemblyContentDescriptor.eachLine { println it }
+
+            // 2. Generate jar with descriptor and copies of files
+            // INPUT: Descriptor, paths of files to copy
+            // OUTPUT: Path of the descriptor archive
+            // EXCEPTIONS: Files not found
+
+            // 3. Attach descriptor
+            // INPUT: The descriptor archive
+            // OUTPUT: (Side effect) --> Archive with the descriptor archive added
+            // EXCEPTIONS: Files not found
+        } catch (Exception e) {
+            throw new MojoExecutionException(e.getMessage(), e)
+        }
     }
 
     private void printSplash() {
         log.info "*" * 80
         log.info("Generating descriptor for the assembly".center(80))
         log.info "*" * 80
-    }
-
-    private File buildAssemblyFile() {
-        File assemblyFile = Paths.get(project.build.directory, assemblyFileName).toFile()
-        if (!assemblyFile.exists()) {
-            throw new MojoExecutionException("Output file $assemblyFile does not exist.")
-        }
-        return assemblyFile
     }
 }
