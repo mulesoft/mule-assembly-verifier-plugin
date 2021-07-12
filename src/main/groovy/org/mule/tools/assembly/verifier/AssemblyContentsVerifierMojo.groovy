@@ -106,6 +106,7 @@ class AssemblyContentsVerifierMojo extends AbstractMojo {
         // temp directory to unpack to
         def root = new File("${project.build.directory}/mule-assembly-verifier-temp")
 
+        // @todo: consider replacing it with commons-compress based implementation
         new net.lingala.zip4j.ZipFile(outputFile).extractAll("${root}");
 
         def canonicalRootPath = root.canonicalPath.replaceAll("\\\\", "/")

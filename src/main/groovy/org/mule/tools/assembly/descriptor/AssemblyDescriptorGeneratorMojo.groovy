@@ -37,6 +37,8 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
     @Parameter(defaultValue = 'false')
     Boolean skip
 
+    // @todo: product version will be probably needed for the archive
+
     /**
      * Project instance.
      */
