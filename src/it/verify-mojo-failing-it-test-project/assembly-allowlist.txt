@@ -1,0 +1,18 @@
+#
+# root
+#
+/the-assembly-${productVersion}
+/the-assembly-${productVersion}/conf
+/the-assembly-${productVersion}/lib
+/the-assembly-${productVersion}/README.md
+
+#
+# /conf
+#
+/the-assembly-${productVersion}/conf/a-config.conf
+
+#
+# /lib/opt
+#
+/the-assembly-${productVersion}/lib/opt
+/the-assembly-${productVersion}/lib/opt/another-jar.jar
