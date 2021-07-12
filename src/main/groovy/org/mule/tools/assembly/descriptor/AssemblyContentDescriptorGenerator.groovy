@@ -2,15 +2,10 @@ package org.mule.tools.assembly.descriptor
 
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveInputStream
-import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
-import org.apache.commons.compress.compressors.CompressorInputStream
-import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 import org.apache.maven.plugin.logging.Log
-
-import static org.apache.commons.compress.compressors.CompressorStreamFactory.GZIP
 
 class AssemblyContentDescriptorGenerator {
 
@@ -24,7 +19,8 @@ class AssemblyContentDescriptorGenerator {
     File generateDescriptor() {
         log.debug("Generating content descriptor for ${assemblyFile}")
         validateFiles()
-        getAssemblyEntries()
+        List entries = getAssemblyEntries()
+        entries.each { println it }
         // place entries in yaml file
         // log where the file was generated
         // return the file path of the descriptor
@@ -46,27 +42,21 @@ class AssemblyContentDescriptorGenerator {
         }
     }
 
-    private void getAssemblyEntries() {
-        // Here are the things that I need to be aware of while dealing with streams
-        // Close everything
-        // Consider buffering
-        // There seems to be some autodetect capabilities
-        // Important web pages:
-        // 1. https://commons.apache.org/proper/commons-compress/examples.html
-        // 2. http://groovy-lang.org/groovy-dev-kit.html#_working_with_io
-        // 3. How to create the input buffered stream http://docs.groovy-lang.org/latest/html/groovy-jdk/java/io/File
-        // .html#newInputStream()
-        // 4. Collections: https://docs.groovy-lang.org/next/html/documentation/working-with-collections.html#Collections-Lists
-
+    private List getAssemblyEntries() {
+        List entries = []
         try (ArchiveInputStream stream = buildArchiveInputStream(assemblyFile)) {
             ArchiveEntry entry = null;
             while ((entry = stream.getNextEntry()) != null) {
                 if (!stream.canReadEntryData(entry)) {
                     throw new IllegalStateException("Cant ready entry ${entry.name} from ${assemblyFile}")
                 }
-                println entry.name
+                entries << new AssemblyEntry(name: entry.name,
+                        size: entry.size,
+                        isDirectory: entry.directory,
+                        lastModifiedDate: entry.lastModifiedDate)
             }
         }
+        return entries
     }
 
     private ArchiveInputStream buildArchiveInputStream(File assemblyFile) {
