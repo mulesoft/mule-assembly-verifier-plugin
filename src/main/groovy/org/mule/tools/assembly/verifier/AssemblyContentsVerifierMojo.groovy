@@ -1,5 +1,9 @@
 package org.mule.tools.assembly.verifier
 
+import org.apache.commons.compress.archivers.ArchiveEntry
+import org.apache.commons.compress.archivers.ArchiveInputStream
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
+import org.apache.commons.io.IOUtils
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.MojoFailureException
@@ -7,6 +11,8 @@ import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
 
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.regex.Pattern
 import java.util.zip.ZipFile
 
@@ -104,10 +110,8 @@ class AssemblyContentsVerifierMojo extends AbstractMojo {
         }
 
         // temp directory to unpack to
-        def root = new File("${project.build.directory}/mule-assembly-verifier-temp")
-
-        // @todo: consider replacing it with commons-compress based implementation
-        new net.lingala.zip4j.ZipFile(outputFile).extractAll("${root}");
+        def root = Paths.get(project.build.directory, "mule-assembly-verifier-temp").toFile()
+        extractZip(outputFile, root)
 
         def canonicalRootPath = root.canonicalPath.replaceAll("\\\\", "/")
 
@@ -234,5 +238,27 @@ class AssemblyContentsVerifierMojo extends AbstractMojo {
         entries.findAll {
             entries.count(it) > 1
         }.unique().sort { it.toLowerCase() } // sort case-insensitive
+    }
+
+    def extractZip(File zipFile, File targetDir) {
+        try (ArchiveInputStream i = new ZipArchiveInputStream(zipFile.newInputStream())) {
+            ArchiveEntry entry = null;
+            while ((entry = i.getNextEntry()) != null) {
+                File f = Paths.get(targetDir.getPath(), entry.getName()).toFile()
+                if (entry.isDirectory()) {
+                    if (!f.isDirectory() && !f.mkdirs()) {
+                        throw new IOException("failed to create directory " + f);
+                    }
+                } else {
+                    File parent = f.getParentFile();
+                    if (!parent.isDirectory() && !parent.mkdirs()) {
+                        throw new IOException("failed to create directory " + parent);
+                    }
+                    try (OutputStream o = Files.newOutputStream(f.toPath())) {
+                        IOUtils.copy(i, o);
+                    }
+                }
+            }
+        }
     }
 }

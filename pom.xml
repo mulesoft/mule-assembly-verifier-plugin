@@ -21,7 +21,6 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.version>3.8.1</maven.version>
         <groovy.version>3.0.8</groovy.version>
-        <zip4j.version>2.9.0</zip4j.version>
         <maven-plugin-annotations.version>3.6.1</maven-plugin-annotations.version>
         <junit.version>4.13.2</junit.version>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
@@ -32,6 +31,7 @@
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <slf4j-simple.version>1.7.31</slf4j-simple.version>
         <commons-compress.version>1.20</commons-compress.version>
+        <commons-io.version>2.10.0</commons-io.version>
     </properties>
 
     <dependencies>
@@ -41,14 +41,14 @@
             <version>${groovy.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.lingala.zip4j</groupId>
-            <artifactId>zip4j</artifactId>
-            <version>${zip4j.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>${commons-compress.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
