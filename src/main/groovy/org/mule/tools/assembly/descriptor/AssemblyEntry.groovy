@@ -6,6 +6,8 @@ import groovy.transform.ToString;
 class AssemblyEntry {
 
     String name
+
+    // @todo: Get @theales opinion about these properties
     long size
     boolean isDirectory
     Date lastModifiedDate

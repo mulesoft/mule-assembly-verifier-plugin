@@ -1,5 +1,9 @@
 package org.mule.tools.assembly.descriptor
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveInputStream
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
@@ -7,10 +11,14 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 import org.apache.maven.plugin.logging.Log
 
+import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE
+import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER
+
 class AssemblyContentDescriptorGenerator {
 
     private static final String TAR_GZ_EXTENSION = "tar.gz"
     private static final String ZIP_EXTENSION = "zip"
+    private static final String YAML_DESCRIPTOR_FILE_NAME = "assembly-descriptor.yaml"
 
     Log log
     File assemblyFile
@@ -20,11 +28,9 @@ class AssemblyContentDescriptorGenerator {
         log.debug("Generating content descriptor for ${assemblyFile}")
         validateFiles()
         List entries = getAssemblyEntries()
-        entries.each { println it }
-        // place entries in yaml file
-        // log where the file was generated
-        // return the file path of the descriptor
-        return null
+        File yamDescriptor = createYamlDescriptor(entries, descriptorTempDir)
+        log.debug("Descriptor of assembly content has been created at: ${yamDescriptor}")
+        return yamDescriptor
     }
 
     private void validateFiles() {
@@ -73,6 +79,19 @@ class AssemblyContentDescriptorGenerator {
             default:
                 throw new IllegalArgumentException("Assembly archive format not supported")
         }
+    }
+
+    private File createYamlDescriptor(List assemblyEntries, File descriptorTempDir) {
+        File descriptorFile = new File(descriptorTempDir, YAML_DESCRIPTOR_FILE_NAME)
+        buildYamlObjectMapper().writeValue(descriptorFile, assemblyEntries)
+        return descriptorFile
+    }
+
+    private ObjectMapper buildYamlObjectMapper() {
+        return new ObjectMapper(new YAMLFactory().disable(WRITE_DOC_START_MARKER))
+                .setPropertyNamingStrategy(KEBAB_CASE)
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .registerModule(new JavaTimeModule())
     }
 
 }
