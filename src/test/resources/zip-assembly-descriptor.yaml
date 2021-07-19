@@ -1,0 +1,9 @@
+- name: "the-assembly-1.0.0/README.md"
+  size: 0
+  last-modified-date: "2021-07-04T23:40:26.000+00:00"
+- name: "the-assembly-1.0.0/conf/a-config.conf"
+  size: 0
+  last-modified-date: "2021-07-04T23:40:26.000+00:00"
+- name: "the-assembly-1.0.0/lib/opt/a-jar.jar"
+  size: 0
+  last-modified-date: "2021-07-04T23:40:26.000+00:00"
