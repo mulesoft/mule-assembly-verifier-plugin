@@ -1,6 +1,5 @@
 package org.mule.tools.assembly.descriptor
 
-import com.google.common.io.Files
 import org.apache.maven.plugin.logging.Log
 
 import java.nio.file.Path
@@ -66,7 +65,7 @@ class AssemblyRepackager {
         }
 
         File descriptorArchiveNewHome = new File(targetDir, descriptorArchive.name)
-        Files.copy(descriptorArchive, descriptorArchiveNewHome)
+        descriptorArchiveNewHome << descriptorArchive.bytes
     }
 
     private repackageAssembly(File assemblyFile, File assemblyRootDir) {
