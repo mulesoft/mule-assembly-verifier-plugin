@@ -35,7 +35,6 @@
     </properties>
 
     <dependencies>
-        <!-- // @todo[question]: What should we do with https://github.com/mulesoft/mule/blob/fae2e775239109866c6921d627fa6ac18e6e865a/pom.xml#L1581 ?-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
