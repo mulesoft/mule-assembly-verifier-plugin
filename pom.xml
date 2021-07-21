@@ -32,6 +32,7 @@
         <slf4j-simple.version>1.7.31</slf4j-simple.version>
         <commons-compress.version>1.20</commons-compress.version>
         <jackson.version>2.12.4</jackson.version>
+        <license.maven.plugin.version>2.11</license.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -115,6 +116,33 @@
         <sourceDirectory>${project.basedir}/src/main/groovy</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/groovy</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license.maven.plugin.version}</version>
+                <configuration>
+                    <skip>${skipVerifications}</skip>
+                    <header>com/mycila/maven/plugin/license/templates/CPAL.txt</header>
+                    <properties>
+                        <owner>MuleSoft, Inc</owner>
+                        <project.url>http://www.mulesoft.com</project.url>
+                    </properties>
+                    <includes>
+                        <include>**/*.groovy</include>
+                    </includes>
+                    <mapping>
+                        <groovy>SLASHSTAR_STYLE</groovy>
+                    </mapping>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
