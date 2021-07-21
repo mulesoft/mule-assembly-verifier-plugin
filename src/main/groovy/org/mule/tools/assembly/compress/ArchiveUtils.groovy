@@ -112,7 +112,7 @@ class ArchiveUtils {
         ArchiveEntry entry
         while ((entry = stream.getNextEntry()) != null) {
             if (!stream.canReadEntryData(entry)) {
-                throw new IllegalStateException("Cant ready entry ${entry.name} from ${archive}")
+                throw new IllegalStateException("Cannot ready entry ${entry.name} from ${archive}")
             }
             if (!entry.directory) {
                 entries << entry
