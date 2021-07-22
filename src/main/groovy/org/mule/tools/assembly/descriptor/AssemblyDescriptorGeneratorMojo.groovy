@@ -13,9 +13,6 @@ import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 
-import java.nio.file.Paths
-import java.text.SimpleDateFormat
-
 /**
  * Mojo for generating the descriptor of the assembly.
  *
@@ -45,12 +42,6 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
     String descriptorJarName
 
     /**
-     * Relative path of the location where the descriptor jar should be placed within the assembly's root directory
-     */
-    @Parameter(defaultValue = 'lib/mule')
-    String targetDescriptorDirWithinAssembly
-
-    /**
      * Skip execution of this mojo.
      */
     @Parameter(defaultValue = 'false')
@@ -68,21 +59,14 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
         try {
             AssemblyDescriptorValidator.validateAssemblyFile(assemblyFile)
             AssemblyDescriptorValidator.validateDescriptorTempDir(descriptorTempDir)
-            descriptorTempDir = setupWorkingDirForExecution()
 
             File contentDescriptor = new AssemblyContentDescriptorGenerator(log: log, workingDir: descriptorTempDir)
                     .generateDescriptor(assemblyFile)
 
-            // @todo[question]: Would clients "scanners" be scared by such a new particular jar? Wouldn't be less scared if
-            //  seeing a plain file?
             File descriptorArchive = new AssemblyDescriptorArchiveBuilder(log: log, workingDir: descriptorTempDir)
                     .buildDescriptorArchive(contentDescriptor, descriptorJarName)
 
-            // @todo[question]: How inconvenient is the idea of repackaging the distro? Let's say from the Maven's convention
-            //  perspective, How many conventions might we braking with this?
-            // @todo: find out if the path thing works in Windows
-            new AssemblyRepackager(log: log, workingDir: descriptorTempDir)
-                    .repackageWithDescriptor(assemblyFile, descriptorArchive, Paths.get(targetDescriptorDirWithinAssembly))
+            // @todo: Make the descriptor be installed in the repo along with the rest of the artifacts
 
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e)
@@ -93,16 +77,5 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
         log.info "*" * 80
         log.info("Generating descriptor for the assembly".center(80))
         log.info "*" * 80
-    }
-
-    private File setupWorkingDirForExecution() {
-        // @todo[question]: Should this explanation be left?
-        // Given that more than one assembly could be processed in the same build lifecycle, this hack intends to avoid collisions
-        String datetime = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS").format(new Date())
-        File workingDir = new File(descriptorTempDir, datetime)
-        if (!workingDir.mkdirs()) {
-            throw new IOException("Could not create working dir for Mojo execution: ${workingDir}")
-        }
-        return workingDir
     }
 }
