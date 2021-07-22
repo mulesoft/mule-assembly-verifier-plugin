@@ -148,6 +148,9 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
                 <configuration>
+                    <excludes>
+                        <exclude>**/*HelpMojo.*</exclude>
+                    </excludes>
                     <skip>${skipTests}</skip>
                 </configuration>
                 <executions>
