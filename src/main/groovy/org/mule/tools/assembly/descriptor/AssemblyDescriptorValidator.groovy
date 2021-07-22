@@ -21,7 +21,7 @@ class AssemblyDescriptorValidator {
         }
 
         if (!descriptorTempDir.exists() && !descriptorTempDir.mkdirs()) {
-            throw new IllegalArgumentException("Can not create descriptor generation temp dir at ${descriptorTempDir}")
+            throw new IllegalArgumentException("Cannot create descriptor generation temp dir at ${descriptorTempDir}")
         }
     }
 }

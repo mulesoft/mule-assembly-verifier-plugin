@@ -57,7 +57,7 @@ class AssemblyDescriptorValidatorTest {
 
         assertThatThrownBy(() -> AssemblyDescriptorValidator.validateDescriptorTempDir(fileThatWillNotBeCreated))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Can not create descriptor generation temp dir at ${fileThatWillNotBeCreated}")
+                .hasMessage("Cannot create descriptor generation temp dir at ${fileThatWillNotBeCreated}")
 
         nonWritableDir.setWritable(true)
     }
