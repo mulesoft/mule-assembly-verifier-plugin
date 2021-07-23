@@ -8,25 +8,13 @@ package org.mule.tools.assembly.compress
 
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveInputStream
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
-import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 import org.apache.commons.compress.utils.IOUtils
 
 import java.nio.file.Files
 import java.nio.file.Paths
 
 class ArchiveUtils {
-
-    private static final String TAR_GZ_EXTENSION = "tar.gz"
-    private static final String ZIP_EXTENSION = "zip"
-
-    static void validateAssemblyFormat(File assembly) {
-        String assemblyName = assembly.name
-        if (!(assemblyName.endsWith(TAR_GZ_EXTENSION) || assemblyName.endsWith(ZIP_EXTENSION))) {
-            throw new IllegalArgumentException("Assembly archive format not supported")
-        }
-    }
 
     static void extractZip(File zipFile, File targetDir) {
         try (ArchiveInputStream archiveInputStream = new ZipArchiveInputStream(zipFile.newInputStream())) {
@@ -54,33 +42,4 @@ class ArchiveUtils {
         }
     }
 
-    static List listZipEntries(File zipFile) {
-        List entries
-        try (ArchiveInputStream stream = new ZipArchiveInputStream(zipFile.newInputStream())) {
-            entries = listArchiveEntries(stream, zipFile)
-        }
-        return entries
-    }
-
-    static List listTarGzEntries(File tarGzFile) {
-        List entries
-        try (ArchiveInputStream stream = new TarArchiveInputStream(new GzipCompressorInputStream(tarGzFile.newInputStream()))) {
-            entries = listArchiveEntries(stream, tarGzFile)
-        }
-        return entries
-    }
-
-    private static List listArchiveEntries(ArchiveInputStream stream, File archive) {
-        List entries = []
-        ArchiveEntry entry
-        while ((entry = stream.getNextEntry()) != null) {
-            if (!stream.canReadEntryData(entry)) {
-                throw new IllegalStateException("Cannot ready entry ${entry.name} from ${archive}")
-            }
-            if (!entry.directory) {
-                entries << entry
-            }
-        }
-        return entries
-    }
 }

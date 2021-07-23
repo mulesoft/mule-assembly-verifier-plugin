@@ -12,6 +12,6 @@ import groovy.transform.ToString;
 class AssemblyEntry {
 
     String name
-    long size
-    Date lastModifiedDate
+    long sizeInBytes
+    String sha256
 }

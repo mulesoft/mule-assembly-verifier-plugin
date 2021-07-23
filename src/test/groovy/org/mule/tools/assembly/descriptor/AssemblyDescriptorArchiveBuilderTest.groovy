@@ -6,7 +6,7 @@
  */
 package org.mule.tools.assembly.descriptor
 
-import org.apache.maven.plugin.logging.Log
+
 import org.apache.maven.plugin.logging.SystemStreamLog
 import org.junit.Before
 import org.junit.Rule
@@ -18,15 +18,13 @@ import static org.mule.tools.assembly.compress.ArchiveUtils.extractZip
 
 class AssemblyDescriptorArchiveBuilderTest {
 
-    static final Log logger = new SystemStreamLog()
+    private static final String DESCRIPTOR_TEST_RESOURCES_PATH = "/descriptor"
+    private static final String ASSEMBLY_DESCRIPTOR_JAR_NAME = "mule-assembly-descriptor-1.0.0-SNAPSHOT.jar"
+    private static final String ZIP_DESCRIPTOR_FILE_NAME = "expected-assembly-descriptor.yaml"
+    private static final String ZIP_DESCRIPTOR_RESOURCE_PATH = "${DESCRIPTOR_TEST_RESOURCES_PATH}/${ZIP_DESCRIPTOR_FILE_NAME}"
 
-    static final String ASSEMBLY_DESCRIPTOR_JAR_NAME = "mule-assembly-descriptor-1.0.0-SNAPSHOT.jar"
-    static final String ASSEMBLY_TEMP_DIR = "mule-assembly-descriptor-temp"
-    static final String ZIP_DESCRIPTOR_FILE_NAME = "zip-assembly-descriptor.yaml"
+    private static final File zipAssemblyDescriptor = new File(getClass().getResource(ZIP_DESCRIPTOR_RESOURCE_PATH).toURI())
 
-    static final File zipAssemblyDescriptor = new File(getClass().getResource("/${ZIP_DESCRIPTOR_FILE_NAME}").toURI())
-
-    File descriptorTempDir
     AssemblyDescriptorArchiveBuilder archiveBuilder;
 
     @Rule
@@ -34,20 +32,20 @@ class AssemblyDescriptorArchiveBuilderTest {
 
     @Before
     void setUp() throws Exception {
-        descriptorTempDir = tempFolder.newFolder(ASSEMBLY_TEMP_DIR)
-        archiveBuilder = new AssemblyDescriptorArchiveBuilder(log: logger, workingDir: descriptorTempDir)
+        archiveBuilder = new AssemblyDescriptorArchiveBuilder(log: new SystemStreamLog(), workingDir: tempFolder.newFolder())
     }
 
     @Test
     void buildDescriptorArchiveTest() {
-        File jarExtractLocation = tempFolder.newFolder("jar-extract-location")
-
         File descriptorJarFile = archiveBuilder.buildDescriptorArchive(zipAssemblyDescriptor, ASSEMBLY_DESCRIPTOR_JAR_NAME)
         assertThat(descriptorJarFile).isFile().hasExtension("jar")
 
+        File jarExtractLocation = tempFolder.newFolder()
         extractZip(descriptorJarFile, jarExtractLocation)
-        File extractedDescriptorFile = new File(jarExtractLocation, ZIP_DESCRIPTOR_FILE_NAME)
-        assertThat(extractedDescriptorFile)
+        assertThat(jarExtractLocation.list()).hasSize(1)
+
+        File generatedDescriptorYaml = new File(jarExtractLocation, ZIP_DESCRIPTOR_FILE_NAME)
+        assertThat(generatedDescriptorYaml)
                 .exists()
                 .isFile()
                 .hasSameTextualContentAs(zipAssemblyDescriptor)

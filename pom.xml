@@ -19,20 +19,24 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.version>3.8.1</maven.version>
+
+        <gmavenplus-plugin.version>1.12.1</gmavenplus-plugin.version>
+        <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+        <license.maven.plugin.version>2.11</license.maven.plugin.version>
+        <maven-invoker-plugin.version>3.2.2</maven-invoker-plugin.version>
+        <maven-plugin-plugin.version>3.6.1</maven-plugin-plugin.version>
+
+        <commons-codec.version>1.15</commons-codec.version>
+        <commons-compress.version>1.20</commons-compress.version>
         <groovy.version>3.0.8</groovy.version>
+        <jackson.version>2.12.4</jackson.version>
         <maven-plugin-annotations.version>3.6.1</maven-plugin-annotations.version>
+        <maven.version>3.8.1</maven.version>
+
+        <assertj-core.version>3.20.2</assertj-core.version>
         <junit.version>4.13.2</junit.version>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
-        <assertj-core.version>3.20.2</assertj-core.version>
-        <maven-plugin-plugin.version>3.6.1</maven-plugin-plugin.version>
-        <gmavenplus-plugin.version>1.12.1</gmavenplus-plugin.version>
-        <maven-invoker-plugin.version>3.2.2</maven-invoker-plugin.version>
-        <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <slf4j-simple.version>1.7.31</slf4j-simple.version>
-        <commons-compress.version>1.20</commons-compress.version>
-        <jackson.version>2.12.4</jackson.version>
-        <license.maven.plugin.version>2.11</license.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -45,6 +49,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>${commons-compress.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>

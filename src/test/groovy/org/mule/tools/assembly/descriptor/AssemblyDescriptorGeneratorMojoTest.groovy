@@ -6,8 +6,9 @@
  */
 package org.mule.tools.assembly.descriptor
 
-import org.apache.maven.plugin.Mojo
+
 import org.apache.maven.plugin.testing.MojoRule
+import org.apache.maven.project.MavenProject
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -17,9 +18,10 @@ import static org.mule.tools.assembly.compress.ArchiveUtils.extractZip
 
 class AssemblyDescriptorGeneratorMojoTest {
 
-    private static final String PROJECT_BASE_DIR = "/descriptor-mojo-test-project"
-    private static final String ASSEMBLY_NAME = "descriptor-mojo-test-project-1.0.0.zip"
-    private static final String EXPECTED_ZIP_DESCRIPTOR_PATH = "/zip-assembly-descriptor.yaml"
+    private static final String DESCRIPTOR_TEST_RESOURCES_PATH = "/descriptor"
+    private static final String PROJECT_BASE_DIR = "${DESCRIPTOR_TEST_RESOURCES_PATH}/descriptor-mojo-test-project"
+    private static final String EXPECTED_ZIP_DESCRIPTOR_PATH =
+            "${DESCRIPTOR_TEST_RESOURCES_PATH}/expected-assembly-descriptor.yaml"
     private static final String GENERATED_DESCRIPTOR_JAR_PATH =
             "${PROJECT_BASE_DIR}/target/mule-assembly-descriptor-temp/mule-assembly-descriptor-1.0.0.jar"
 
@@ -34,19 +36,27 @@ class AssemblyDescriptorGeneratorMojoTest {
 
     @Test
     void verifyExecutionTest() throws Exception {
-        Mojo verifierMojo = rule.lookupConfiguredMojo(projectBaseDir, "attach-descriptor")
+        AssemblyDescriptorGeneratorMojo generatorMojo = rule.lookupConfiguredMojo(projectBaseDir, "generate-descriptor")
+        MavenProject project = rule.readMavenProject(projectBaseDir)
 
-        assertThat(verifierMojo).isNotNull()
-        verifierMojo.execute()
+        assertThat(generatorMojo).isNotNull()
+        generatorMojo.project = project
+        generatorMojo.execute()
 
         File generatedDescriptorArchive = new File(getClass().getResource(GENERATED_DESCRIPTOR_JAR_PATH).toURI())
         assertThat(generatedDescriptorArchive).isFile().exists()
 
-        File extractedDescriptorJar = tempFolder.newFolder("extracted-descriptor-jar")
+        File extractedDescriptorJar = tempFolder.newFolder()
         extractZip(generatedDescriptorArchive, extractedDescriptorJar)
+
+        assertThat(extractedDescriptorJar.list()).hasSize(1)
         assertThat(new File(extractedDescriptorJar, "assembly-descriptor.yaml"))
                 .exists()
                 .isFile()
                 .hasSameTextualContentAs(expectedZipDescriptor)
+
+        assertThat(project.getAttachedArtifacts())
+                .extractingResultOf("toString")
+                .containsOnly("org.mule.tools:descriptor-mojo-test-project:jar:assembly-descriptor:1.0.0")
     }
 }

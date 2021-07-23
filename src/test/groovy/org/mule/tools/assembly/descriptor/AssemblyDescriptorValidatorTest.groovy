@@ -12,6 +12,8 @@ import org.junit.rules.TemporaryFolder
 
 import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.assertThatThrownBy
+import static org.mule.tools.assembly.descriptor.AssemblyDescriptorValidator.validateAssemblyFile
+import static org.mule.tools.assembly.descriptor.AssemblyDescriptorValidator.validateDescriptorTempDir
 
 class AssemblyDescriptorValidatorTest {
 
@@ -20,31 +22,39 @@ class AssemblyDescriptorValidatorTest {
 
     @Test
     void validateAssemblyFileTest() {
-        File anAssembly = tempFolder.newFile()
-        AssemblyDescriptorValidator.validateAssemblyFile(anAssembly)
+        validateAssemblyFile(tempFolder.newFile("assembly.zip"))
+        validateAssemblyFile(tempFolder.newFile("assembly.tar.gz"))
     }
 
     @Test
     void validateAssemblyFileWhenAssemblyFileDoesNotExistTest() {
-        assertThatThrownBy(() -> AssemblyDescriptorValidator.validateAssemblyFile(new File("an-assembly-that-does-not-exist" +
-                ".zip")))
+        String assemblyName = "does-not-exist-assembly.zip"
+        assertThatThrownBy(() -> validateAssemblyFile(new File(assemblyName)))
                 .isInstanceOf(FileNotFoundException.class)
-                .hasMessage("an-assembly-that-does-not-exist.zip (Assembly file does not exist)")
+                .hasMessage("${assemblyName} (Assembly file does not exist)")
+    }
+
+    @Test
+    void validateAssemblyFileWhenFormatIsNotSupported() {
+        File assembly = tempFolder.newFile("does-not-exist-assembly.tar.bz2")
+        assertThatThrownBy(() -> validateAssemblyFile(assembly))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Assembly archive format not supported")
     }
 
     @Test
     void validateDescriptorTempDirCreateDirIfDoesNotExistTest() {
-        File tempDir = new File(tempFolder.newFolder(), "mule-assembly-descriptor-temp")
-        AssemblyDescriptorValidator.validateDescriptorTempDir(tempDir)
+        File aDirectoryThatDoesNotExistPriorValidation = new File(tempFolder.newFolder(), "mule-assembly-descriptor-temp")
+        validateDescriptorTempDir(aDirectoryThatDoesNotExistPriorValidation)
 
-        assertThat(tempDir).exists().isDirectory()
+        assertThat(aDirectoryThatDoesNotExistPriorValidation).exists().isDirectory()
     }
 
     @Test
     void validateDescriptorTempDirWhenItIsNotADirTest() {
         File aFile = tempFolder.newFile()
 
-        assertThatThrownBy(() -> AssemblyDescriptorValidator.validateDescriptorTempDir(aFile))
+        assertThatThrownBy(() -> validateDescriptorTempDir(aFile))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Given descriptor generation temp dir path ${aFile} is not a directory")
     }
@@ -55,7 +65,7 @@ class AssemblyDescriptorValidatorTest {
         nonWritableDir.setWritable(false)
         File fileThatWillNotBeCreated = new File(nonWritableDir, "tmp-dir")
 
-        assertThatThrownBy(() -> AssemblyDescriptorValidator.validateDescriptorTempDir(fileThatWillNotBeCreated))
+        assertThatThrownBy(() -> validateDescriptorTempDir(fileThatWillNotBeCreated))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot create descriptor generation temp dir at ${fileThatWillNotBeCreated}")
 

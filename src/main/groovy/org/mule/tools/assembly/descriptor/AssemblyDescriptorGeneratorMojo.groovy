@@ -4,23 +4,23 @@
  * license, a copy of which has been included with this distribution in the
  * LICENSE.txt file.
  */
-// @todo: Skip HelpMojo sources from coverage report
-
 package org.mule.tools.assembly.descriptor
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
+import org.apache.maven.plugins.annotations.Component
 import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
+import org.apache.maven.project.MavenProject
+import org.apache.maven.project.MavenProjectHelper
 
 /**
  * Mojo for generating the descriptor of the assembly.
  *
- * The descriptor is a `jar` archive added as an additional entry to the assembly archive, containing  a `YAML` file that
- * describes Mule distribution assembly entries
+ * The descriptor is a `jar` archive containing  a `YAML` file that describes Mule distribution assembly entries
  */
-// @todo[question]: Any better name for the goal?
-@Mojo(name = "attach-descriptor")
+// @todo[question]: What about this name for the Mojo's goal?
+@Mojo(name = "generate-descriptor")
 class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
 
     /**
@@ -36,16 +36,32 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
     File descriptorTempDir
 
     /**
-     * Version of the product used for the descriptor zip file name
+     * Version of the product used for the descriptor jar file name
      */
     @Parameter(defaultValue = 'mule-assembly-descriptor-${project.version}.jar')
     String descriptorJarName
+
+    /**
+     * Classifier for attaching descriptor to the project
+     */
+    // @todo[question]: What about this classifier?
+    @Parameter(defaultValue = 'assembly-descriptor')
+    String descriptorClassifier
 
     /**
      * Skip execution of this mojo.
      */
     @Parameter(defaultValue = 'false')
     Boolean skip
+
+    /**
+     * Project instance.
+     */
+    @Parameter(defaultValue = '${project}', required = true, readonly = true)
+    MavenProject project
+
+    @Component
+    MavenProjectHelper projectHelper;
 
     void execute() {
 
@@ -66,7 +82,7 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
             File descriptorArchive = new AssemblyDescriptorArchiveBuilder(log: log, workingDir: descriptorTempDir)
                     .buildDescriptorArchive(contentDescriptor, descriptorJarName)
 
-            // @todo: Make the descriptor be installed in the repo along with the rest of the artifacts
+            projectHelper.attachArtifact(project, "jar", descriptorClassifier, descriptorArchive)
 
         } catch (Exception e) {
             throw new MojoExecutionException(e.getMessage(), e)

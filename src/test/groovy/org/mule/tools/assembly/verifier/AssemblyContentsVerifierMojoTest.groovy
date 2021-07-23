@@ -13,22 +13,31 @@ import org.codehaus.plexus.configuration.PlexusConfiguration
 import org.junit.Rule
 import org.junit.Test
 
-import java.nio.file.Paths
-
+import static org.assertj.core.api.Assertions.assertThat
 import static org.assertj.core.api.Assertions.assertThatThrownBy
 import static org.junit.Assert.assertNotNull
-import static org.junit.Assert.assertTrue
 
 class AssemblyContentsVerifierMojoTest {
+
+    private static final String VERIFIER_TEST_RESOURCES_PATH = "/verifier"
+    public static final String VERIFY_EXECUTION_PROJECT_PATH =
+            "${VERIFIER_TEST_RESOURCES_PATH}/verify-mojo-test-project"
+    private static final String VERIFY_MAVEN2_TEST_PROJECT_PATH =
+            "${VERIFIER_TEST_RESOURCES_PATH}/verify-mojo-maven2-style-snapshots-test-project"
+    public static final String VERIFY_FAILED_EXECUTION_PROJECT_PATH =
+            "${VERIFIER_TEST_RESOURCES_PATH}/verify-mojo-test-failing-project"
+    public static final String MISSING_ALLOWLIST_PROJECT_PATH =
+            "${VERIFIER_TEST_RESOURCES_PATH}/verify-mojo-test-missing-allowlist-project"
+    public static final String MISSING_ASSEMBLY_PROJECT_PATH =
+            "${VERIFIER_TEST_RESOURCES_PATH}/verify-mojo-missing-assembly-test-project"
 
     @Rule
     public MojoRule rule = new MojoRule()
 
     @Test
     void verifyExecutionTest() throws Exception {
-        File baseDir = Paths.get("target", "test-classes", "verify-mojo-test-project").toFile()
-        assertNotNull(baseDir)
-        assertTrue(baseDir.exists())
+        File baseDir = new File(getClass().getResource(VERIFY_EXECUTION_PROJECT_PATH).toURI())
+        assertThat(baseDir).exists().isDirectory()
 
         AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
@@ -37,13 +46,11 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void verifyExecutionMaven2StyleSnapshotsTest() throws Exception {
-        File baseDir = Paths.get("target", "test-classes", "verify-mojo-maven2-style-snapshots-test-project").toFile()
-        assertNotNull(baseDir)
-        assertTrue(baseDir.exists())
+        File baseDir = new File(getClass().getResource(VERIFY_MAVEN2_TEST_PROJECT_PATH).toURI())
+        assertThat(baseDir).exists().isDirectory()
 
         File pom = new File(baseDir, "pom.xml")
-        assertNotNull(pom)
-        assertTrue(pom.exists())
+        assertThat(pom).exists().isFile()
 
         AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
@@ -56,9 +63,8 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void verifyFiledExecutionTest() throws Exception {
-        File baseDir = Paths.get("target", "test-classes", "verify-mojo-test-failing-project").toFile()
-        assertNotNull(baseDir)
-        assertTrue(baseDir.exists())
+        File baseDir = new File(getClass().getResource(VERIFY_FAILED_EXECUTION_PROJECT_PATH).toURI())
+        assertThat(baseDir).exists().isDirectory()
 
         AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
@@ -76,9 +82,8 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void missingAllowlistTest() throws Exception {
-        File baseDir = Paths.get("target", "test-classes", "verify-mojo-test-missing-allowlist-project").toFile()
-        assertNotNull(baseDir)
-        assertTrue(baseDir.exists())
+        File baseDir = new File(getClass().getResource(MISSING_ALLOWLIST_PROJECT_PATH).toURI())
+        assertThat(baseDir).exists().isDirectory()
 
         AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)
@@ -90,9 +95,8 @@ class AssemblyContentsVerifierMojoTest {
 
     @Test
     void missingAssemblyTest() throws Exception {
-        File baseDir = Paths.get("target", "test-classes", "verify-mojo-missing-assembly-test-project").toFile()
-        assertNotNull(baseDir)
-        assertTrue(baseDir.exists())
+        File baseDir = new File(getClass().getResource(MISSING_ASSEMBLY_PROJECT_PATH).toURI())
+        assertThat(baseDir).exists().isDirectory()
 
         AssemblyContentsVerifierMojo verifierMojo = (AssemblyContentsVerifierMojo) rule.lookupConfiguredMojo(baseDir, "verify")
         assertNotNull(verifierMojo)

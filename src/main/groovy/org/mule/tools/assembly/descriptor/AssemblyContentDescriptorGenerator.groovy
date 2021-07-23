@@ -10,12 +10,17 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.compress.archivers.ArchiveEntry
+import org.apache.commons.compress.archivers.ArchiveInputStream
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
+import org.apache.commons.compress.utils.IOUtils
 import org.apache.maven.plugin.logging.Log
-import org.mule.tools.assembly.compress.ArchiveUtils
 
 import static com.fasterxml.jackson.databind.PropertyNamingStrategies.KEBAB_CASE
 import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.WRITE_DOC_START_MARKER
-import static org.mule.tools.assembly.compress.ArchiveUtils.validateAssemblyFormat
 
 /**
  * Class for generating the yaml descriptor file of all the entries inside an assembly.
@@ -31,7 +36,6 @@ class AssemblyContentDescriptorGenerator {
     File generateDescriptor(File assemblyFile) {
         log.debug("Generating content descriptor for ${assemblyFile}")
 
-        validateAssemblyFormat(assemblyFile)
         List entries = getAssemblyEntries(assemblyFile)
         File yamDescriptor = createYamlDescriptor(entries, workingDir)
 
@@ -40,15 +44,42 @@ class AssemblyContentDescriptorGenerator {
     }
 
     private List getAssemblyEntries(File assemblyFile) {
-        List entries
         if (assemblyFile.name.endsWith(TAR_GZ_EXTENSION)) {
-            entries = ArchiveUtils.listTarGzEntries(assemblyFile)
+            return listTarGzEntries(assemblyFile)
         } else {
-            entries = ArchiveUtils.listZipEntries(assemblyFile)
+            return listZipEntries(assemblyFile)
         }
-        return entries.collect {
-            new AssemblyEntry(name: it.name, size: it.size, lastModifiedDate: it.lastModifiedDate)
+    }
+
+    private List listZipEntries(File zipFile) {
+        List entries
+        try (ArchiveInputStream stream = new ZipArchiveInputStream(zipFile.newInputStream())) {
+            entries = listArchiveEntries(stream, zipFile)
         }
+        return entries
+    }
+
+    private List listTarGzEntries(File tarGzFile) {
+        List entries
+        try (ArchiveInputStream stream = new TarArchiveInputStream(new GzipCompressorInputStream(tarGzFile.newInputStream()))) {
+            entries = listArchiveEntries(stream, tarGzFile)
+        }
+        return entries
+    }
+
+    private List listArchiveEntries(ArchiveInputStream inputStream, File archive) {
+        List entries = []
+        ArchiveEntry entry
+        while ((entry = inputStream.getNextEntry()) != null) {
+            if (!inputStream.canReadEntryData(entry)) {
+                throw new IllegalStateException("Cannot ready entry ${entry.name} from ${archive}")
+            }
+            if (!entry.directory) {
+                String sha256 = DigestUtils.sha256Hex(IOUtils.toByteArray(inputStream))
+                entries << new AssemblyEntry(name: entry.name, sizeInBytes: entry.size, sha256: sha256)
+            }
+        }
+        return entries
     }
 
     private File createYamlDescriptor(List assemblyEntries, File workingDir) {

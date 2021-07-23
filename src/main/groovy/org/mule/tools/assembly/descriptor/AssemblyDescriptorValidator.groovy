@@ -8,9 +8,17 @@ package org.mule.tools.assembly.descriptor
 
 class AssemblyDescriptorValidator {
 
+    private static final String TAR_GZ_EXTENSION = "tar.gz"
+    private static final String ZIP_EXTENSION = "zip"
+
     static void validateAssemblyFile(File assemblyFile) {
         if (!assemblyFile.exists()) {
             throw new FileNotFoundException(assemblyFile.getPath(), "Assembly file does not exist")
+        }
+
+        String assemblyName = assemblyFile.name
+        if (!(assemblyName.endsWith(TAR_GZ_EXTENSION) || assemblyName.endsWith(ZIP_EXTENSION))) {
+            throw new IllegalArgumentException("Assembly archive format not supported")
         }
     }
 
@@ -24,4 +32,5 @@ class AssemblyDescriptorValidator {
             throw new IllegalArgumentException("Cannot create descriptor generation temp dir at ${descriptorTempDir}")
         }
     }
+
 }
