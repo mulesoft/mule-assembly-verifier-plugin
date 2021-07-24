@@ -85,6 +85,7 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
             projectHelper.attachArtifact(project, "jar", descriptorClassifier, descriptorArchive)
 
         } catch (Exception e) {
+            // @todo: add test for covering this
             throw new MojoExecutionException(e.getMessage(), e)
         }
     }

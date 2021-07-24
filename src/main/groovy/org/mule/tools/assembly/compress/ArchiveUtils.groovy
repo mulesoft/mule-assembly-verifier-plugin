@@ -18,28 +18,25 @@ class ArchiveUtils {
 
     static void extractZip(File zipFile, File targetDir) {
         try (ArchiveInputStream archiveInputStream = new ZipArchiveInputStream(zipFile.newInputStream())) {
-            extractArchive(archiveInputStream, targetDir)
-        }
-    }
-
-    private static void extractArchive(ArchiveInputStream zipArchiveInputStream, File targetDir) {
-        ArchiveEntry entry
-        while ((entry = zipArchiveInputStream.getNextEntry()) != null) {
-            File f = Paths.get(targetDir.getPath(), entry.getName()).toFile()
-            if (entry.isDirectory()) {
-                if (!f.isDirectory() && !f.mkdirs()) {
-                    throw new IOException("failed to create directory " + f);
-                }
-            } else {
-                File parent = f.getParentFile();
-                if (!parent.isDirectory() && !parent.mkdirs()) {
-                    throw new IOException("failed to create directory " + parent);
-                }
-                try (OutputStream o = Files.newOutputStream(f.toPath())) {
-                    IOUtils.copy(zipArchiveInputStream, o);
+            ArchiveEntry entry
+            while ((entry = archiveInputStream.getNextEntry()) != null) {
+                File f = Paths.get(targetDir.getPath(), entry.getName()).toFile()
+                if (entry.isDirectory()) {
+                    if (!f.isDirectory() && !f.mkdirs()) {
+                        // @todo: test this scenario
+                        throw new IOException("failed to create directory " + f);
+                    }
+                } else {
+                    File parent = f.getParentFile();
+                    if (!parent.isDirectory() && !parent.mkdirs()) {
+                        // @todo: test this scenario
+                        throw new IOException("failed to create directory " + parent);
+                    }
+                    try (OutputStream o = Files.newOutputStream(f.toPath())) {
+                        IOUtils.copy(archiveInputStream, o);
+                    }
                 }
             }
         }
     }
-
 }
