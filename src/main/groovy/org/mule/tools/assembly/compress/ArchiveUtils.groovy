@@ -23,13 +23,11 @@ class ArchiveUtils {
                 File f = Paths.get(targetDir.getPath(), entry.getName()).toFile()
                 if (entry.isDirectory()) {
                     if (!f.isDirectory() && !f.mkdirs()) {
-                        // @todo: test this scenario
                         throw new IOException("failed to create directory " + f);
                     }
                 } else {
                     File parent = f.getParentFile();
                     if (!parent.isDirectory() && !parent.mkdirs()) {
-                        // @todo: test this scenario
                         throw new IOException("failed to create directory " + parent);
                     }
                     try (OutputStream o = Files.newOutputStream(f.toPath())) {
