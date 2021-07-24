@@ -6,7 +6,7 @@
  */
 package org.mule.tools.assembly.descriptor
 
-
+import org.apache.maven.plugin.MojoExecutionException
 import org.apache.maven.plugin.testing.MojoRule
 import org.apache.maven.project.MavenProject
 import org.junit.Rule
@@ -14,18 +14,22 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 
 import static org.assertj.core.api.Assertions.assertThat
+import static org.assertj.core.api.Assertions.assertThatThrownBy
 import static org.mule.tools.assembly.compress.ArchiveUtils.extractZip
 
 class AssemblyDescriptorGeneratorMojoTest {
 
     private static final String DESCRIPTOR_TEST_RESOURCES_PATH = "/descriptor"
     private static final String PROJECT_BASE_DIR = "${DESCRIPTOR_TEST_RESOURCES_PATH}/descriptor-mojo-test-project"
+    private static final String FAILING_PROJECT_BASE_DIR =
+            "${DESCRIPTOR_TEST_RESOURCES_PATH}/descriptor-mojo-failing-test-project"
     private static final String EXPECTED_ZIP_DESCRIPTOR_PATH =
             "${DESCRIPTOR_TEST_RESOURCES_PATH}/expected-assembly-descriptor.yaml"
     private static final String GENERATED_DESCRIPTOR_JAR_PATH =
             "${PROJECT_BASE_DIR}/target/mule-assembly-descriptor-temp/mule-assembly-descriptor-1.0.0.jar"
 
     private static final File projectBaseDir = new File(getClass().getResource(PROJECT_BASE_DIR).toURI())
+    private static final File failingProjectBaseDir = new File(getClass().getResource(FAILING_PROJECT_BASE_DIR).toURI())
     private static final File expectedZipDescriptor = new File(getClass().getResource(EXPECTED_ZIP_DESCRIPTOR_PATH).toURI())
 
     @Rule
@@ -35,7 +39,7 @@ class AssemblyDescriptorGeneratorMojoTest {
     public TemporaryFolder tempFolder = new TemporaryFolder()
 
     @Test
-    void verifyExecutionTest() throws Exception {
+    void descriptorExecutionTest() throws Exception {
         AssemblyDescriptorGeneratorMojo generatorMojo = rule.lookupConfiguredMojo(projectBaseDir, "generate-descriptor")
         MavenProject project = rule.readMavenProject(projectBaseDir)
 
@@ -58,5 +62,15 @@ class AssemblyDescriptorGeneratorMojoTest {
         assertThat(project.getAttachedArtifacts())
                 .extractingResultOf("toString")
                 .containsOnly("org.mule.tools:descriptor-mojo-test-project:jar:assembly-descriptor:1.0.0")
+    }
+
+    @Test
+    void descriptorFailingExecutionTest() throws Exception {
+        AssemblyDescriptorGeneratorMojo generatorMojo = rule.lookupConfiguredMojo(failingProjectBaseDir, "generate-descriptor")
+
+        assertThat(generatorMojo).isNotNull()
+        assertThatThrownBy(() -> generatorMojo.execute())
+                .isInstanceOf(MojoExecutionException.class)
+                .hasMessageContaining("descriptor-mojo-failing-test-project-1.0.0.zip (Assembly file does not exist)")
     }
 }
