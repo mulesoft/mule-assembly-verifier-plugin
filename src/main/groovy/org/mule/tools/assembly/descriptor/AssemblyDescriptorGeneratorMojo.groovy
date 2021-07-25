@@ -20,7 +20,7 @@ import org.apache.maven.project.MavenProjectHelper
  * The descriptor is a `jar` archive containing  a `YAML` file that describes Mule distribution assembly entries
  */
 // @todo[question]: What about this name for the Mojo's goal?
-// @todo: If anything change here, then, don't forget to update the `README.md`
+// @todo: If anything change here, then, don't forget to update the `README.md` and many other places
 @Mojo(name = "generate-descriptor")
 class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
 
@@ -43,9 +43,10 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
     String descriptorJarName
 
     /**
-     * Attach the descriptor jar to the Maven project
+     * Whether to attach the descriptor jar to the Maven project or not
      */
     @Parameter(defaultValue = 'true')
+    // @todo: Review coverage impact of this addition
     Boolean attachDescriptor
 
     /**

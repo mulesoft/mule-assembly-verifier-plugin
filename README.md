@@ -1,4 +1,3 @@
-[comment]: <> (brainstorming: What? Why? How?)
 # Summary
 
 Mule Assembly Verifier is a Maven 3 plugin providing fine-grained validation of the assembly/distribution contents. Since the
@@ -62,7 +61,6 @@ Add a snippet like the one below to your pom's *build/plugins* section (typicall
 
 The plugin is bound to the **verify** phase of the build, right after the **package**, and before **install**. If the distribution
 layout and contents fail to validate, the build will halt and validation report be printed.
-
 
 #### Create a validation template
 
@@ -133,17 +131,58 @@ Available options:
 
 ## Descriptor Mojo
 
-### What is an assembly descriptor?
+### So, What's an assembly descriptor?
 
-### Why 
+It's a `jar` that wraps a single `assembly-descriptor.yaml` file containing the description of all content of the assembly. At
+first glance, this `yaml` file could look pretty similar to the `assembly-allowlist.txt`, but it's definitely not, due to a couple
+of subtle differences. The descriptor `yaml` file will contain the full name of all entries in the assembly archive, along with
+its size in `bytes` and its `sha256` sum. e.g.:
 
-### How?
+```yaml
+- name: "the-assembly-1.0.0/README.md"
+  size-in-bytes: 10
+  sha256: "1d5ee0bbb02e25e2f7a65f4e657f2a28179b67b33d1378734ba367a7e3c1476e"
+- name: "the-assembly-1.0.0/conf/a-config.conf"
+  size-in-bytes: 15
+  sha256: "9814784f1ba791238914442c65d3ed89b63c0542421a0a9882710bf5c5267868"
+- name: "the-assembly-1.0.0/lib/opt/some-artifact.txt"
+  size-in-bytes: 13
+  sha256: "1c87b6727f523662df714f06a94ea27fa4d9050c38f4f7712bd4663ffbfdfa01"
+```
 
-#### Add plugin to the build
+### Why would I ever need that?
 
-Add a snippet like the one below to your pom's *build/plugins* section (typically the same module where your assembly is created):
+The assembly descriptor could come in handy for many scenarios; for us, this will become the key piece of the tooling we're
+developing to help our customers get to the latest versions in a frictionless and faster way.
+
+### How to configure this mojo?
+
+Add a snippet like the one below to your pom's *build/plugins* section (typically the same module where your assembly is created,
+and after the assembly `single` goal execution):
 
 ```xml
+    <!-- A typical execution configuration of the assembly plugin prior the `generate-descriptor` goal execution-->
+    <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <configuration>
+            <appendAssemblyId>false</appendAssemblyId>
+            <finalName>the-assembly-${project.version}</finalName>
+            <descriptors>
+                <descriptor>src/assembly/distribution.xml</descriptor>
+            </descriptors>
+        </configuration>
+        <executions>
+            <execution>
+                <phase>package</phase>
+                <goals>
+                    <goal>single</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+
+    <!-- If configured in the same phase, `generate-descriptor` goal execution should be after the assembly execution -->
     <plugin>
         <groupId>org.mule.tools</groupId>
         <artifactId>mule-assembly-verifier</artifactId>
@@ -152,8 +191,11 @@ Add a snippet like the one below to your pom's *build/plugins* section (typicall
             <execution>
                 <phase>package</phase>
                 <goals>
-                    <goal>verify</goal>
+                    <goal>generate-descriptor</goal>
                 </goals>
+                <configuration>
+                    <assemblyFile>${project.build.directory}/the-assembly-${project.version}.zip</assemblyFile>
+                </configuration>
             </execution>
         </executions>
     </plugin>
@@ -161,14 +203,16 @@ Add a snippet like the one below to your pom's *build/plugins* section (typicall
 
 #### Configuration Options
 
-| Name                   | Type      | Default                                                     | Description                                              |
-|------------------------|-----------|-------------------------------------------------------------|----------------------------------------------------------|
-| `assemblyFile`         | `File`    | `${project.build.directory}/${project.build.finalName}.zip` | Assembly file whose descriptor will be generated         |
-| `descriptorTempDir`    | `File`    | `${project.build.directory}/mule-assembly-descriptor-temp`  | Temporary director for the work carried out by this mojo |
-| `descriptorJarName`    | `String`  | `mule-assembly-descriptor-${project.version}.jar`           | Descriptor jar file name                                 |
-| `attachDescriptor`     | `Boolean` | `true`                                                      | Attach the descriptor jar to the Maven project           |
-| `descriptorClassifier` | `String`  | `assembly-descriptor`                                       | Classifier for attaching descriptor to the project       |
-| `skip`                 | `Boolean` | `false`                                                     | Skip execution of this mojo                              |
+Available options:
+
+| Name                   | Type      | Default                                                     | Description                                                      |
+|------------------------|-----------|-------------------------------------------------------------|------------------------------------------------------------------|
+| `assemblyFile`         | `File`    | `${project.build.directory}/${project.build.finalName}.zip` | Assembly file whose descriptor will be generated                 |
+| `descriptorTempDir`    | `File`    | `${project.build.directory}/mule-assembly-descriptor-temp`  | Temporary director for the work carried out by this mojo         |
+| `descriptorJarName`    | `String`  | `mule-assembly-descriptor-${project.version}.jar`           | Descriptor jar file name                                         |
+| `attachDescriptor`     | `Boolean` | `true`                                                      | Whether to attach the descriptor jar to the Maven project or not |
+| `descriptorClassifier` | `String`  | `assembly-descriptor`                                       | Classifier for attaching descriptor to the project               |
+| `skip`                 | `Boolean` | `false`                                                     | Skip execution of this mojo                                      |
 
 ## Known Issues
 
