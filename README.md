@@ -131,6 +131,45 @@ Available options:
 | `maven3StyleSnapshots` | `Boolean` | `true`                           | Disable for Maven 2 builds   |
 | `skip`                 | `Boolean` | `false`                          | Disable execution            |
 
+## Descriptor Mojo
+
+### What is an assembly descriptor?
+
+### Why 
+
+### How?
+
+#### Add plugin to the build
+
+Add a snippet like the one below to your pom's *build/plugins* section (typically the same module where your assembly is created):
+
+```xml
+    <plugin>
+        <groupId>org.mule.tools</groupId>
+        <artifactId>mule-assembly-verifier</artifactId>
+        <version>2.0.0</version>
+        <executions>
+            <execution>
+                <phase>package</phase>
+                <goals>
+                    <goal>verify</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
+```
+
+#### Configuration Options
+
+| Name                   | Type      | Default                                                     | Description                                              |
+|------------------------|-----------|-------------------------------------------------------------|----------------------------------------------------------|
+| `assemblyFile`         | `File`    | `${project.build.directory}/${project.build.finalName}.zip` | Assembly file whose descriptor will be generated         |
+| `descriptorTempDir`    | `File`    | `${project.build.directory}/mule-assembly-descriptor-temp`  | Temporary director for the work carried out by this mojo |
+| `descriptorJarName`    | `String`  | `mule-assembly-descriptor-${project.version}.jar`           | Descriptor jar file name                                 |
+| `attachDescriptor`     | `Boolean` | `true`                                                      | Attach the descriptor jar to the Maven project           |
+| `descriptorClassifier` | `String`  | `assembly-descriptor`                                       | Classifier for attaching descriptor to the project       |
+| `skip`                 | `Boolean` | `false`                                                     | Skip execution of this mojo                              |
+
 ## Known Issues
 
 * Maven 2 support is limited and will be removed in the future
