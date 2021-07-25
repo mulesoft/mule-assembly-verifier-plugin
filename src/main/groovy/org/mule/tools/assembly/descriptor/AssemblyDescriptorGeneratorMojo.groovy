@@ -46,7 +46,6 @@ class AssemblyDescriptorGeneratorMojo extends AbstractMojo {
      * Whether to attach the descriptor jar to the Maven project or not
      */
     @Parameter(defaultValue = 'true')
-    // @todo: Review coverage impact of this addition
     Boolean attachDescriptor
 
     /**
