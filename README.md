@@ -2,12 +2,6 @@
 
 Mule Assembly Verifier is a Maven 3 plugin providing fine-grained validation of the assembly/distribution contents.
 
-## How Stable is It?
-
-The plugin has been developed for a Mule project and used by its builds for several years now. If it's good enough
-for a project with ~100 modules, chances are it's good enough for your case, too :) Recent version had major improvements
-and is no longer tied to Mule - the validation became generic. The Mule name is the (beloved) legacy in the name and nothing else.
-
 ## Isn't There a Standard 'Maven' Way of Doing the Same?
 
 Kind of. Recent versions of the assembly plugin added flags for strict filter matching, but it's a drop in the bucket of
@@ -33,6 +27,13 @@ This plugin solves above problems, often in a much friendlier way, and on top of
   * You can skip validation using the skip configuraiton parameter. This allows to disable validation on some profiles/properties.
 * Implicit audit of project dependency changes via validation template file commit history (immediately see who upgraded or added/removed
   a jar)
+
+
+## How Stable is It?
+
+The plugin has been developed for a Mule project and used by its builds for several years now. If it's good enough
+for a project with ~100 modules, chances are it's good enough for your case, too :) Recent version had major improvements
+and is no longer tied to Mule - the validation became generic. The Mule name is the (beloved) legacy in the name and nothing else.
 
 ## Ok, I Saw the Light, "Show Me the Codes"!
 
@@ -101,7 +102,7 @@ Put a **assembly-allowlist.txt** file in your module root.
   generated content like javadoc where it could change with every build. The plugin will check the content is there
   (and fail if it's missing), but will treat everything under this dir as valid entries
 
-### Configuration Options
+## Configuration Options
 
 Example:
 
@@ -129,9 +130,8 @@ Available options:
 ## Known Issues
 
 * Maven 2 support is limited and will be removed in the future
-* The only supported distribution formats are:
-    - Verifier Mojo: `zip`
-    - Descriptor Mojo: `zip` and `tar.gz`
+* The only supported distribution formats are those that can be processed by unzip. E.g. zip, rar (Resource Archive),
+  but not tar.gz
 
 ## (Optional) Declare a plugin repository
 
