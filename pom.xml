@@ -26,10 +26,8 @@
         <maven-invoker-plugin.version>3.2.2</maven-invoker-plugin.version>
         <maven-plugin-plugin.version>3.6.1</maven-plugin-plugin.version>
 
-        <commons-codec.version>1.15</commons-codec.version>
         <commons-compress.version>1.20</commons-compress.version>
         <groovy.version>3.0.8</groovy.version>
-        <jackson.version>2.12.4</jackson.version>
         <maven-plugin-annotations.version>3.6.1</maven-plugin-annotations.version>
         <maven.version>3.8.1</maven.version>
 
@@ -49,21 +47,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>${commons-compress.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>${commons-codec.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>

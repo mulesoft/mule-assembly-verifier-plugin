@@ -1,9 +1,0 @@
-- name: "the-assembly-1.0.0/README.md"
-  size-in-bytes: 10
-  sha256: "1d5ee0bbb02e25e2f7a65f4e657f2a28179b67b33d1378734ba367a7e3c1476e"
-- name: "the-assembly-1.0.0/conf/a-config.conf"
-  size-in-bytes: 15
-  sha256: "9814784f1ba791238914442c65d3ed89b63c0542421a0a9882710bf5c5267868"
-- name: "the-assembly-1.0.0/lib/opt/some-artifact.txt"
-  size-in-bytes: 13
-  sha256: "1c87b6727f523662df714f06a94ea27fa4d9050c38f4f7712bd4663ffbfdfa01"
