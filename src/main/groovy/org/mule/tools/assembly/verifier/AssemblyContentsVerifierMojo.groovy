@@ -1,4 +1,10 @@
-package org.mule.tools
+/*
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+package org.mule.tools.assembly.verifier
 
 import org.apache.maven.plugin.AbstractMojo
 import org.apache.maven.plugin.MojoExecutionException
@@ -7,8 +13,11 @@ import org.apache.maven.plugins.annotations.Mojo
 import org.apache.maven.plugins.annotations.Parameter
 import org.apache.maven.project.MavenProject
 
+import java.nio.file.Paths
 import java.util.regex.Pattern
 import java.util.zip.ZipFile
+
+import static org.mule.tools.assembly.compress.ArchiveUtils.extractZip
 
 /**
  * Mojo for verifying contents of the output assembly against a controlled allowlist of files
@@ -104,9 +113,8 @@ class AssemblyContentsVerifierMojo extends AbstractMojo {
         }
 
         // temp directory to unpack to
-        def root = new File("${project.build.directory}/mule-assembly-verifier-temp")
-
-        new net.lingala.zip4j.ZipFile(outputFile).extractAll("${root}");
+        def root = Paths.get(project.build.directory, "mule-assembly-verifier-temp").toFile()
+        extractZip(outputFile, root)
 
         def canonicalRootPath = root.canonicalPath.replaceAll("\\\\", "/")
 

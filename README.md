@@ -1,4 +1,3 @@
-[comment]: <> (//@todo: Should we add something about the new Mojo?)
 # Summary
 
 Mule Assembly Verifier is a Maven 3 plugin providing fine-grained validation of the assembly/distribution contents.
@@ -43,67 +42,23 @@ and is no longer tied to Mule - the validation became generic. The Mule name is 
 Add a snippet like the one below to your pom's *build/plugins* section (typically the same module where your assembly is created):
 
 ```xml
-        <plugin>
-            <groupId>org.mule.tools</groupId>
-            <artifactId>mule-assembly-verifier</artifactId>
-            <version>1.4</version>
-            <dependencies>
-                <!--
-                    Declare a compatible groovy dependency for this plugin to avoid
-                    conflicts with the main build.
-                -->
-                <dependency>
-                    <groupId>org.codehaus.groovy</groupId>
-                    <artifactId>groovy-all</artifactId>
-                    <version>1.6.0</version>
-                </dependency>
-            </dependencies>
-
-            <executions>
-                <execution>
-                    <phase>verify</phase>
-                    <goals>
-                        <goal>verify</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
+    <plugin>
+        <groupId>org.mule.tools</groupId>
+        <artifactId>mule-assembly-verifier</artifactId>
+        <version>2.0.0</version>
+        <executions>
+            <execution>
+                <phase>verify</phase>
+                <goals>
+                    <goal>verify</goal>
+                </goals>
+            </execution>
+        </executions>
+    </plugin>
 ```
 
 The plugin is bound to the **verify** phase of the build, right after the **package**, and before **install**. If the distribution
 layout and contents fail to validate, the build will halt and validation report be printed.
-
-### (Optional) Declare a plugin repository
-
-This is only required until a released version is propagated to the maven central (may take a while) or when trying out
-a development snapshot:
-
-```xml
-    <pluginRepositories>
-        <pluginRepository>
-            <id>codehaus-plugin-snapshots</id>
-            <name>Codehaus Plugin Snapshot Repository</name>
-            <url>http://snapshots.repository.codehaus.org</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
-        <pluginRepository>
-            <id>codehaus-plugins</id>
-            <name>Codehaus Plugin Repository</name>
-            <url>http://repository.codehaus.org</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
-```
 
 ### Create a validation template
 
@@ -164,18 +119,31 @@ Example:
 
 Available options:
 
-----------------------------------------------------------------------------------------------------
-|**Name**               |**Type**               |**Default**                        |**Description**|
-|-----------------------|-----------------------|-----------------------------------|-------------|
-|allowlist              |File                   |assembly-allowlist.txt             |Validation template location|
-|projectOutputFile      |String                 |${project.build.finalName}.zip     |Archive to validate|
-|productVersion         |String                 |${project.version}                 |This project's version|
-|maven3StyleSnapshots   |Boolean                |true                               |Disable for Maven 2 builds|
-|skip                   |Boolean                |false                              |Disable execution|
-
+| Name                   | Type      | Default                          | Description                  |
+|------------------------|-----------|----------------------------------|------------------------------|
+| `allowlist`            | `File`    | `assembly-allowlist.txt`         | Validation template location |
+| `projectOutputFile`    | `String`  | `${project.build.finalName}.zip` | Archive to validate          |
+| `productVersion`       | `String`  | `${project.version}`             | This project's version       |
+| `maven3StyleSnapshots` | `Boolean` | `true`                           | Disable for Maven 2 builds   |
+| `skip`                 | `Boolean` | `false`                          | Disable execution            |
 
 ## Known Issues
 
 * Maven 2 support is limited and will be removed in the future
 * The only supported distribution formats are those that can be processed by unzip. E.g. zip, rar (Resource Archive),
   but not tar.gz
+
+## (Optional) Declare a plugin repository
+
+This is only required until a released version is propagated to the maven central (may take a while) or when trying out
+a development snapshot:
+
+```xml
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mule-plugin</id>
+            <name>Mule Repository</name>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+```
