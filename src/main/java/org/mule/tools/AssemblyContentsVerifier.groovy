@@ -15,9 +15,9 @@ class AssemblyContentsVerifier extends GroovyMojo
     /**
      * The library list to check against.
      *
-     * @parameter default-value="assembly-whitelist.txt"
+     * @parameter default-value="assembly-allowlist.txt"
      */
-    File whitelist
+    File allowlist
 
     /**
      * File name whose contents will be verified.
@@ -56,7 +56,7 @@ class AssemblyContentsVerifier extends GroovyMojo
     def pattern
 
     Set mandatoryWildcards = []
-    List whitelistEntries = []
+    List allowlistEntries = []
 
     void execute() {
         // Potentially skip execution
@@ -66,8 +66,8 @@ class AssemblyContentsVerifier extends GroovyMojo
         }
 
         // sanity check
-        if (!whitelist.exists()) {
-            throw new MojoExecutionException("Whitelist file $whitelist does not exist.")
+        if (!allowlist.exists()) {
+            throw new MojoExecutionException("Allowlist file $allowlist does not exist.")
         }
 
         // splash
@@ -81,21 +81,21 @@ class AssemblyContentsVerifier extends GroovyMojo
             throw new MojoExecutionException("Output file $outputFile  does not exist.")
         }
 
-        // process whitelist
-        whitelist.eachLine() {
+        // process allowlist
+        allowlist.eachLine() {
             // ignore comments and empty lines
             if (!it.startsWith('#') && it.trim().size() != 0) {
                 // canonicalize and interpolate the entry
-                whitelistEntries << it.replaceAll("\\\\", "/").replaceAll(Pattern.quote('${productVersion}'), productVersion)
+                allowlistEntries << it.replaceAll("\\\\", "/").replaceAll(Pattern.quote('${productVersion}'), productVersion)
             }
         }
 
-        mandatoryWildcards = whitelistEntries.findAll {
+        mandatoryWildcards = allowlistEntries.findAll {
             it.endsWith('+')
         }
 
         // wildcards will be checked explicitly, move them out of the way for regular validation
-        whitelistEntries.removeAll(mandatoryWildcards)
+        allowlistEntries.removeAll(mandatoryWildcards)
 
         // strip the trailing + sign
         mandatoryWildcards = mandatoryWildcards.collect {
@@ -156,7 +156,7 @@ class AssemblyContentsVerifier extends GroovyMojo
     }
 
     def findMissing(actualNames) {
-        // find all whitelist entries which are missing
+        // find all allowlist entries which are missing
 
         // for maven3-style timestamped snapshots
         def processedActualNames = []
@@ -174,7 +174,7 @@ class AssemblyContentsVerifier extends GroovyMojo
             }
         }
 
-        whitelistEntries.findAll {
+        allowlistEntries.findAll {
             if (!maven3StyleSnapshots) {
                 return !actualNames.contains(it)
             } else {
@@ -184,29 +184,29 @@ class AssemblyContentsVerifier extends GroovyMojo
     }
 
     def findUnexpected(actualNames) {
-        if (!whitelistEntries) {
-            // whitelist is empty, assume every entry is unexpected
+        if (!allowlistEntries) {
+            // allowlist is empty, assume every entry is unexpected
             return actualNames;
         }
 
-        // find all entries not in the whitelist
+        // find all entries not in the allowlist
         actualNames.findAll {
             if (!maven3StyleSnapshots) {
-                return !whitelistEntries.contains(it)
+                return !allowlistEntries.contains(it)
             } else {
                 // pre-process the actual filename to look for a match by replacing m3 snapshot timestamp
                 // with just a "-SNAPSHOT" for comparison
                 def matcher = pattern.matcher(it)
                 if (matcher.find()) {
                     def processed = matcher.replaceAll("$version-SNAPSHOT")
-                    if (!whitelistEntries.contains(processed)) {
+                    if (!allowlistEntries.contains(processed)) {
                         // no direct match, check against the mandatory wildcard (entry ending with '+')
                         return mandatoryWildcards.find { w -> processed.startsWith(w) } == null
                     }
                     return false
                 }
                 // don't process the name, regular lookup
-                if (!whitelistEntries.contains(it)) {
+                if (!allowlistEntries.contains(it)) {
                     // no direct match, check against the mandatory wildcard (entry ending with '+')
                     return mandatoryWildcards.find { w -> it.startsWith(w)} == null
                 }
