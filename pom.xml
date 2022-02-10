@@ -34,7 +34,7 @@
         <assertj-core.version>3.20.2</assertj-core.version>
         <junit.version>4.13.2</junit.version>
         <maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
-        <slf4j-simple.version>1.7.32</slf4j-simple.version>
+        <slf4j-simple.version>1.7.36</slf4j-simple.version>
     </properties>
 
     <dependencies>
