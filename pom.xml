@@ -26,7 +26,7 @@
         <maven-invoker-plugin.version>3.2.2</maven-invoker-plugin.version>
         <maven-plugin-plugin.version>3.6.1</maven-plugin-plugin.version>
 
-        <commons-compress.version>1.21</commons-compress.version>
+        <commons-compress.version>1.26.0</commons-compress.version>
         <groovy.version>3.0.17</groovy.version>
         <maven-plugin-annotations.version>3.6.1</maven-plugin-annotations.version>
         <maven.version>3.8.1</maven.version>
